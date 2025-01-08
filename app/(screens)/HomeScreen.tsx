@@ -1,43 +1,31 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { Link, router } from "expo-router";
 
-
-export type RootStackParamList = {
-  Home: undefined;
-  OtherScreen: undefined; 
-};
-
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, "Home">;
-
-type Props = {
-  navigation: HomeScreenNavigationProp;
-};
-
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
+const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => alert("Back pressed")}
-      >
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
+
       <View style={styles.buttonContainer}>
+        {/* Use With An Account */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("OtherScreen")}
-        >
-          <Text style={styles.text}>Use Without An Account</Text>
-          <Ionicons name="person-remove" size={24} color="black" style={styles.icon} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("OtherScreen")}
+          onPress={() => router.push("/(auth)/sign-in")}
         >
           <Text style={styles.text}>Use With An Account</Text>
-          <Ionicons name="person" size={24} color="black" style={styles.icon} />
+        </TouchableOpacity>
+
+        {/* Use Without An Account */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/(screens)/Without-an-account")}
+        >
+          <Text style={styles.text}>Use Without An Account</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -50,14 +38,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F7FA",
     justifyContent: "center",
     alignItems: "center",
+    width: "100%", // Ensures container takes full width
   },
   backButton: {
     position: "absolute",
     top: 40,
     left: 20,
-    backgroundColor: "black",
+    backgroundColor: "#E8E8E8",
     borderRadius: 25,
     padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   buttonContainer: {
     justifyContent: "center",
@@ -66,11 +59,11 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#E8E8E8",
     padding: 20,
-    width: "80%",
+    width: "80%", // Adjusts button width
     borderRadius: 10,
     marginVertical: 10,
     elevation: 3,
@@ -83,9 +76,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#000",
-  },
-  icon: {
-    marginLeft: 10,
+    textAlign: "center",
   },
 });
 

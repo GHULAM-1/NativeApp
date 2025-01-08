@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { tokenCache } from "@/cache";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
-import { useColorScheme } from "@/hooks/useColorScheme";
-
-
+import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
@@ -20,7 +17,6 @@ if (!publishableKey) {
 
 export default function RootLayout() {
   const [isSplashVisible, setIsSplashVisible] = useState(true);
-  const colorScheme = useColorScheme();
 
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -29,21 +25,14 @@ export default function RootLayout() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsSplashVisible(false);
-    }, 3000); // Adjust duration as needed
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  // useEffect(() => {
-  //   if (fontsLoaded) {
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
-
-  
   if (isSplashVisible) {
     return (
       <View style={styles.splashContainer}>
-        <Text style={styles.splashText}>CarrerQuest</Text>
+        <Text style={styles.splashText}>CareerQuest</Text>
       </View>
     );
   }
@@ -55,26 +44,41 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <ClerkLoaded>
-        <Stack>
-      
-          <Stack.Screen
-            name="index" 
-            options={{ headerShown: false }}
-          />
-    
-          <Stack.Screen
-            name="HomeScreen"
-            options={{ title: "Home" }}
-          />
-          {/* Other screens */}
-          <Stack.Screen name="+not-found" />
-        </Stack>
+        <MainContent />
         <StatusBar style="auto" />
       </ClerkLoaded>
     </ClerkProvider>
   );
-  
 }
+
+const MainContent = () => {
+  const router = useRouter();
+  const { signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/(home)"); // Redirect to the home screen
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Logout</Text>
+      </TouchableOpacity>
+      <Stack screenOptions={{
+        headerShown: false, // Hides the header globally
+      }}>
+        <Stack.Screen name="(home)/index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(screens)/HomeScreen"
+          options={{ headerShown: false }}
+        />
+      </Stack>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   splashContainer: {
@@ -87,5 +91,19 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "bold",
     color: "skyblue",
+  },
+  logoutButton: {
+    backgroundColor: "#ff4d4d",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+    alignSelf: "flex-end",
+    marginTop: 40,
+    marginRight: 20,
+  },
+  logoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

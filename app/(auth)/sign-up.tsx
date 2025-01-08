@@ -1,100 +1,111 @@
-import * as React from 'react'
-import { Text, TextInput, Button, View } from 'react-native'
-import { useSignUp } from '@clerk/clerk-expo'
-import { useRouter } from 'expo-router'
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { TextInput, Button, Card, Title } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 export default function SignUpScreen() {
-  const { isLoaded, signUp, setActive } = useSignUp()
-  const router = useRouter()
-
-  const [emailAddress, setEmailAddress] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [pendingVerification, setPendingVerification] = React.useState(false)
-  const [code, setCode] = React.useState('')
-
-  // Handle submission of sign-up form
-  const onSignUpPress = async () => {
-    if (!isLoaded) return
-
-    // Start sign-up process using email and password provided
-    try {
-      await signUp.create({
-        emailAddress,
-        password,
-      })
-
-      // Send user an email with verification code
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-
-      // Set 'pendingVerification' to true to display second form
-      // and capture OTP code
-      setPendingVerification(true)
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
-    }
-  }
-
-  // Handle submission of verification form
-  const onVerifyPress = async () => {
-    if (!isLoaded) return
-
-    try {
-      // Use the code the user provided to attempt verification
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      })
-
-      // If verification was completed, set the session to active
-      // and redirect the user
-      if (signUpAttempt.status === 'complete') {
-        await setActive({ session: signUpAttempt.createdSessionId })
-        router.replace('/')
-      } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(JSON.stringify(signUpAttempt, null, 2))
-      }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
-    }
-  }
-
-  if (pendingVerification) {
-    return (
-      <>
-        <Text>Verify your email</Text>
-        <TextInput
-          value={code}
-          placeholder="Enter your verification code"
-          onChangeText={(code) => setCode(code)}
-        />
-        <Button title="Verify" onPress={onVerifyPress} />
-      </>
-    )
-  }
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
 
   return (
-    <View>
-      <>
-        <Text>Sign up</Text>
-        <TextInput
-          autoCapitalize="none"
-          value={emailAddress}
-          placeholder="Enter email"
-          onChangeText={(email) => setEmailAddress(email)}
-        />
-        <TextInput
-          value={password}
-          placeholder="Enter password"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-        <Button title="Continue" onPress={onSignUpPress} />
-      </>
+    <View style={styles.container}>
+      {/* Back Button */}
+      <Button
+        style={styles.backButton}
+        mode="text"
+        icon={() => <Ionicons name="arrow-back" size={24} color="black" />}
+        onPress={() => router.back()}
+      >
+        Back
+      </Button>
+
+      <Card style={styles.card}>
+        <Card.Content>
+          <Title style={styles.title}>Sign Up</Title>
+
+          {/* Email Input */}
+          <TextInput
+            label="Enter Your Email"
+            mode="outlined"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            outlineColor="#D9D9D9"
+            activeOutlineColor="#0000FF"
+          />
+
+          {/* Password Input */}
+          <TextInput
+            label="Enter Your Password"
+            mode="outlined"
+            value={password}
+            onChangeText={setPassword}
+            style={styles.input}
+            secureTextEntry
+            outlineColor="#D9D9D9"
+            activeOutlineColor="#0000FF"
+          />
+
+          {/* Confirm Password Input */}
+          <TextInput
+            label="Confirm Password"
+            mode="outlined"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            style={styles.input}
+            secureTextEntry
+            outlineColor="#D9D9D9"
+            activeOutlineColor="#0000FF"
+          />
+
+          {/* Sign-Up Button */}
+          <Button
+            mode="contained"
+            style={styles.signUpButton}
+            onPress={() => console.log("Sign Up pressed")}
+          >
+            Sign Up
+          </Button>
+        </Card.Content>
+      </Card>
     </View>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#F8F7FA",
+    justifyContent: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  card: {
+    borderRadius: 20,
+    padding: 20,
+    elevation: 4,
+    marginTop: 80, // To prevent overlap with back button
+  },
+  title: {
+    textAlign: "center",
+    marginBottom: 20,
+    fontSize: 24,
+    color: "#2A2A2A",
+  },
+  input: {
+    marginBottom: 15,
+    backgroundColor: "#F8F7FA",
+  },
+  signUpButton: {
+    marginTop: 20,
+    borderRadius: 10,
+    backgroundColor: "#0000FF",
+  },
+});
