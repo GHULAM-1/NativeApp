@@ -40,14 +40,9 @@ const QuizScreen: React.FC = () => {
 
   return (
     <>
-      <Button
-        style={styles.backButton}
-        mode="text"
-        icon="arrow-left"
-        onPress={() => router.back()}
-      >
-        Back
-      </Button>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
       <View style={styles.container}>
         {/* Question */}
         <Text style={styles.question}>{currentQuestion.question}</Text>
@@ -65,7 +60,10 @@ const QuizScreen: React.FC = () => {
 
         {/* Pagination */}
         <View style={styles.paginationContainer}>
-          <TouchableOpacity onPress={handlePrevious} disabled={currentQuestionIndex === 0}>
+          <TouchableOpacity
+            onPress={handlePrevious}
+            disabled={currentQuestionIndex === 0}
+          >
             <Ionicons
               name="arrow-back-circle-outline"
               size={32}
@@ -84,21 +82,26 @@ const QuizScreen: React.FC = () => {
             <Ionicons
               name="arrow-forward-circle-outline"
               size={32}
-              color={currentQuestionIndex === questions.length - 1 ? "#D3D3D3" : "#0000FF"}
+              color={
+                currentQuestionIndex === questions.length - 1
+                  ? "#D3D3D3"
+                  : "#0000FF"
+              }
             />
           </TouchableOpacity>
         </View>
 
         {/* Submit Button */}
-        {allQuestionsAnswered && currentQuestionIndex === questions.length - 1 && (
-          <Button
-            mode="contained"
-            style={styles.submitButton}
-            onPress={() => router.push("/Form-Result")}
-          >
-            Submit
-          </Button>
-        )}
+        {allQuestionsAnswered &&
+          currentQuestionIndex === questions.length - 1 && (
+            <Button
+              mode="contained"
+              style={styles.submitButton}
+              onPress={() => router.push("/Form-Result")}
+            >
+              Submit
+            </Button>
+          )}
       </View>
     </>
   );
@@ -116,7 +119,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     left: 20,
-    zIndex: 1,
+    backgroundColor: "black",
+    borderRadius: 25,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    zIndex:1,
   },
   question: {
     fontSize: 18,

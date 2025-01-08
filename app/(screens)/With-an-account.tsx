@@ -1,70 +1,58 @@
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Button } from "react-native-paper";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 const HomeOptions = () => {
   return (
     <View style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+
       {/* Form Button */}
       <TouchableOpacity
-        style={styles.buttonWrapper}
-        onPress={() => router.push("/Form")} // Replace "/Form" with your target route
+        style={styles.touchableButton}
+        onPress={() => router.push("/Form")}
       >
-        <Button
-          mode="outlined"
-          style={styles.button}
-          icon={() => (
-            <Ionicons name="document-text-outline" size={24} color="#000" />
-          )}
-        >
-          Form
-        </Button>
+        <View style={styles.buttonContent}>
+          <Ionicons name="document-text-outline" size={24} color="#000" style={styles.icon} />
+          <Text style={styles.text}>Form</Text>
+        </View>
       </TouchableOpacity>
 
       {/* Quest Connect Button */}
       <TouchableOpacity
-        style={styles.buttonWrapper}
-        onPress={() => router.push("/Quest-Connect")} // Replace with your target route
+        style={styles.touchableButton}
+        onPress={() => router.push("/Quest-Connect")}
       >
-        <Button
-          mode="outlined"
-          style={styles.button}
-          icon={() => <Ionicons name="people-outline" size={24} color="#000" />}
-        >
-          Quest Connect
-        </Button>
+        <View style={styles.buttonContent}>
+          <Ionicons name="people-outline" size={24} color="#000" style={styles.icon} />
+          <Text style={styles.text}>Quest Connect</Text>
+        </View>
       </TouchableOpacity>
 
       {/* AI Chatbot Button */}
       <TouchableOpacity
-        style={styles.buttonWrapper}
-        onPress={() => router.push("/Form")} // Replace with your target route
+        style={styles.touchableButton}
+        onPress={() => router.push("/Form")}
       >
-        <Button
-          mode="outlined"
-          style={styles.button}
-          icon={() => (
-            <Ionicons name="chatbubbles-outline" size={24} color="#000" />
-          )}
-        >
-          AI Chatbot
-        </Button>
+        <View style={styles.buttonContent}>
+          <Ionicons name="chatbubbles-outline" size={24} color="#000" style={styles.icon} />
+          <Text style={styles.text}>AI Chatbot</Text>
+        </View>
       </TouchableOpacity>
 
       {/* A/O Level Guide Button */}
       <TouchableOpacity
-        style={styles.buttonWrapper}
-        onPress={() => router.push("/Form")} // Replace with your target route
+        style={styles.touchableButton}
+        onPress={() => router.push("/Equivalence-Info-Screen")}
       >
-        <Button
-          mode="outlined"
-          style={styles.button}
-          icon={() => <Ionicons name="book-outline" size={24} color="#000" />}
-        >
-          A / O level student Guide
-        </Button>
+        <View style={styles.buttonContent}>
+          <Ionicons name="book-outline" size={24} color="#000" style={styles.icon} />
+          <Text style={styles.text}>A / O Level Student Guide</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -78,24 +66,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  buttonWrapper: {
-    width: "70%", // Ensure the entire button takes up 70% of the width
-    marginVertical: 10, // Spacing between buttons
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    backgroundColor: "black",
+    borderRadius: 25,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  button: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "black",
-    borderWidth: 1,
+  touchableButton: {
+    width: "70%",
+    marginVertical: 10,
     borderRadius: 20,
-    paddingVertical: 10,
-    backgroundColor: "#E6E6FA", // Light background for button
+    overflow: "hidden",
+    backgroundColor: "#E6E6FA",
+    paddingVertical: 15,
+    alignItems: "center",
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    // justifyContent: "space-between",
+    width: "90%",
+  },
+  icon: {
+    width: "30%", // Icon takes 30% of the width
+    textAlign: "center", // Center align the icon
+  },
+  text: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#000",
+    textAlign: "center",
+    width: "60%", // Text takes 70% of the width
+    flexWrap: "wrap", // Ensures text wraps if it exceeds the width
   },
 });
 
