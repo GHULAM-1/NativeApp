@@ -1,10 +1,11 @@
-import React from 'react';
+import React ,{useState} from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { TextInput, Button, Card, Title } from 'react-native-paper';
 import { useSignIn, useOAuth } from '@clerk/clerk-expo';
 import { useRouter, Link } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
+
 
 // Warm-up the browser for better user experience during OAuth flow
 export const useWarmUpBrowser = () => {
@@ -25,6 +26,7 @@ export default function SignInScreen() {
   const router = useRouter();
   const [emailAddress, setEmailAddress] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [showPassword, setShowPassword] = useState(false); 
 
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
 
@@ -106,6 +108,12 @@ export default function SignInScreen() {
             secureTextEntry
             outlineColor="#D9D9D9"
             activeOutlineColor="#0000FF"
+            right={
+              <TextInput.Icon
+                icon={showPassword ? "eye-off-outline" : "eye-outline"} // Use valid icons
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            }
           />
 
           <Text style={styles.forgotPassword}>

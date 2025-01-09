@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, AppState,AppStateStatus  } from "react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { tokenCache } from "@/cache";
-import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider, ClerkLoaded, useAuth, useSession } from "@clerk/clerk-expo";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
@@ -53,7 +53,42 @@ export default function RootLayout() {
 
 const MainContent = () => {
   const router = useRouter();
-  const { signOut } = useAuth();
+  const { signOut, getToken } = useAuth();
+  const { session, isLoaded } = useSession();
+
+  // Ensure session is checked when the app becomes active
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState:AppStateStatus) => {
+      if (nextAppState === "active") {
+        console.log("App has become active. Checking session...");
+        const token = await getToken(); // Refresh the session token
+        if (token) {
+          console.log("Token refreshed. Session is valid.");
+          router.replace("/(screens)/With-an-account");
+        } else {
+          console.log("No session found. Redirecting to sign-in.");
+          router.replace("/(auth)/sign-in");
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
+
+    return () => subscription.remove();
+  }, [getToken, router]);
+
+  // Initial session check on app load
+  useEffect(() => {
+    if (isLoaded) {
+      if (session) {
+        console.log("Session found. Redirecting to With-an-account...");
+        router.replace("/(screens)/With-an-account");
+      } else {
+        console.log("No session found. Redirecting to sign-in...");
+        router.replace("/(auth)/sign-in");
+      }
+    }
+  }, [isLoaded, session]);
 
   const handleLogout = async () => {
     await signOut();
@@ -65,16 +100,11 @@ const MainContent = () => {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
-      <Stack screenOptions={{
-        headerShown: false, // Hides the header globally
-      }}>
-        <Stack.Screen name="(home)/index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(screens)/HomeScreen"
-          options={{ headerShown: false }}
-        />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(home)/index" />
+        <Stack.Screen name="(auth)/sign-in" />
+        <Stack.Screen name="(auth)/sign-up" />
+        <Stack.Screen name="(screens)/With-an-account" />
       </Stack>
     </View>
   );
