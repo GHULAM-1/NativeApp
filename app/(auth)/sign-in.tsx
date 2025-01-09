@@ -1,12 +1,12 @@
-import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { TextInput, Button, Card, Title } from 'react-native-paper';
-import { useSignIn, useOAuth } from '@clerk/clerk-expo';
-import { useRouter, Link } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
+import React from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { TextInput, Button, Card, Title } from "react-native-paper";
+import { useSignIn, useOAuth } from "@clerk/clerk-expo";
+import { useRouter, Link } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
 
-// Warm-up the browser for better user experience during OAuth flow
 export const useWarmUpBrowser = () => {
   React.useEffect(() => {
     void WebBrowser.warmUpAsync();
@@ -23,36 +23,36 @@ export default function SignInScreen() {
 
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
-  const [emailAddress, setEmailAddress] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
 
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
   const handleGoogle = React.useCallback(async () => {
     if (!setActive) {
-      console.error('setActive is undefined');
+      console.error("setActive is undefined");
       return;
     }
 
     try {
       const { createdSessionId } = await startOAuthFlow({
-        redirectUrl: Linking.createURL('/(screens)/With-an-account', { scheme: 'myapp' }),
+        redirectUrl: Linking.createURL("/(screens)/With-an-account", { scheme: "myapp" }),
       });
 
       if (createdSessionId) {
         await setActive({ session: createdSessionId });
-        router.replace('/(screens)/With-an-account');
+        router.replace("/(screens)/With-an-account");
       } else {
-        console.error('OAuth sign-in not complete');
+        console.error("OAuth sign-in not complete");
       }
     } catch (err) {
-      console.error('OAuth Sign-In Error:', err);
+      console.error("OAuth Sign-In Error:", err);
     }
   }, [startOAuthFlow, setActive, router]);
 
   const handleEmailSignIn = React.useCallback(async () => {
     if (!isLoaded || !setActive) {
-      console.error('Sign-in is not loaded or setActive is undefined');
+      console.error("Sign-in is not loaded or setActive is undefined");
       return;
     }
 
@@ -62,31 +62,29 @@ export default function SignInScreen() {
         password,
       });
 
-      if (signInAttempt.status === 'complete') {
+      if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        router.replace('/(screens)/With-an-account');
+        router.replace("/(screens)/With-an-account");
       } else {
-        console.error('Sign-in not complete:', signInAttempt);
+        console.error("Sign-in not complete:", signInAttempt);
       }
     } catch (err) {
-      console.error('Email Sign-In Error:', err);
+      console.error("Email Sign-In Error:", err);
     }
   }, [isLoaded, emailAddress, password, signIn, setActive, router]);
 
   return (
     <View style={styles.container}>
-    <Button
-        style={styles.backButton}
-        mode="text"
-        icon="arrow-left"
-        onPress={() => router.back()}
-      >
-        Back
-      </Button>
+      {/* Custom Back Button */}
+      <TouchableOpacity style={styles.customBackButton} onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+
       <Card style={styles.card}>
         <Card.Content>
           <Title style={styles.title}>Sign In</Title>
 
+          {/* Email Input */}
           <TextInput
             label="Enter User Name or Email"
             mode="outlined"
@@ -97,6 +95,8 @@ export default function SignInScreen() {
             outlineColor="#D9D9D9"
             activeOutlineColor="#0000FF"
           />
+
+          {/* Password Input */}
           <TextInput
             label="Enter Password"
             mode="outlined"
@@ -108,24 +108,21 @@ export default function SignInScreen() {
             activeOutlineColor="#0000FF"
           />
 
-          <Text style={styles.forgotPassword}>
-            Forgot Password?{' '}
-            <Text
-              style={styles.link}
-              onPress={() => console.log('Navigate to reset password')}
-            >
-              Click here
-            </Text>
-          </Text>
-
+          {/* Forgot Password */}
           <Button
-            mode="contained"
-            style={styles.signInButton}
-            onPress={handleEmailSignIn}
+            mode="text"
+            onPress={() => console.log("Navigate to reset password")}
+            style={styles.link}
           >
+            Forgot Password?
+          </Button>
+
+          {/* Sign-In Button */}
+          <Button mode="contained" style={styles.signInButton} onPress={handleEmailSignIn}>
             Sign In
           </Button>
 
+          {/* Google Sign-In */}
           <Button
             mode="outlined"
             style={styles.googleButton}
@@ -135,11 +132,11 @@ export default function SignInScreen() {
             Sign in with Google
           </Button>
 
+          {/* Footer */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Don’t have an account? </Text>
             <Link href="/sign-up" asChild>
-              <Button compact mode="text" style={styles.signUpButton}>
-                Sign up
+              <Button compact mode="text">
+                Don’t have an account? Sign up
               </Button>
             </Link>
           </View>
@@ -153,68 +150,61 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#F8F7FA',
-    justifyContent: 'center',
-    alignItems: 'center', // Centers content horizontally
-    width: "100%", // Ensures the container takes full width
+    backgroundColor: "#F8F7FA",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
-  backButton: {
-    position: 'absolute',
+  customBackButton: {
+    position: "absolute",
     top: 40,
     left: 20,
     zIndex: 1,
+    backgroundColor: "#000000", // Black background
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
   },
   card: {
-    width: "100%", // Ensures the Card takes the full width of the container
+    width: "100%",
     borderRadius: 20,
     padding: 20,
     elevation: 4,
-    alignSelf: "stretch", // Allows the Card to stretch fully
+    alignSelf: "stretch",
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
-    color: '#2A2A2A',
+    color: "#2A2A2A",
   },
   input: {
     marginBottom: 15,
-    backgroundColor: '#F8F7FA',
-    width: "100%", // Ensures TextInput fields take the full width of the Card
-  },
-  forgotPassword: {
-    marginBottom: 20,
-    textAlign: 'left',
-    fontSize: 14,
-    color: '#2A2A2A',
-  },
-  link: {
-    color: '#1E90FF',
-    textDecorationLine: 'underline',
+    backgroundColor: "#F8F7FA",
+    width: "100%",
   },
   signInButton: {
     marginBottom: 10,
     borderRadius: 10,
-    backgroundColor: '#0000FF',
-    width: "100%", // Ensures button takes full width
+    backgroundColor: "#0000FF",
+    width: "100%",
   },
   googleButton: {
     marginBottom: 20,
     borderRadius: 10,
-    borderColor: '#0000FF',
-    width: "100%", // Ensures button takes full width
+    borderColor: "#0000FF",
+    width: "100%",
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  footerText: {
-    fontSize: 14,
-    color: '#2A2A2A',
-  },
-  signUpButton: {
-    marginLeft: 5,
+  link: {
+    marginBottom: 20,
+    color: "#1E90FF",
+    textDecorationLine: "underline",
   },
 });
 
