@@ -3,11 +3,15 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Button } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import Header from "@/components/Header";
 
 const HomeOptions = () => {
   return (
+    <>
+      <View style={styles.header}>
+       <Header title="Home"  />
+       </View>
     <View style={styles.container}>
-      {/* Form Button */}
       <TouchableOpacity
         style={styles.buttonWrapper}
         onPress={() => router.push("/Form")} // Replace "/Form" with your target route
@@ -67,6 +71,7 @@ const HomeOptions = () => {
         </Button>
       </TouchableOpacity>
     </View>
+    </>
   );
 };
 
@@ -77,6 +82,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  header: {
+    marginTop:26,
+    padding:0,
   },
   buttonWrapper: {
     width: "70%", // Ensure the entire button takes up 70% of the width

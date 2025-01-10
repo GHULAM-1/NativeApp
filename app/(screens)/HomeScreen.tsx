@@ -1,11 +1,15 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
+import Header from "@/components/Header"; // Adjust the path to your Header component
 
 const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
+      
+     
+
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="black" />
@@ -38,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F7FA",
     justifyContent: "center",
     alignItems: "center",
-    width: "100%", // Ensures container takes full width
+    width: "100%",
   },
   backButton: {
     position: "absolute",
@@ -63,7 +67,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#E8E8E8",
     padding: 20,
-    width: "80%", // Adjusts button width
+    width: "80%",
     borderRadius: 10,
     marginVertical: 10,
     elevation: 3,

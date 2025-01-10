@@ -62,9 +62,9 @@ const MainContent = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Stack screenOptions={{
         headerShown: false, // Hides the header globally
       }}>
