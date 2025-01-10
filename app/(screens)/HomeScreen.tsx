@@ -2,10 +2,14 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import Header from "@/components/Header"; // Adjust the path to your Header component
 
 const HomeScreen: React.FC = () => {
   return (
     <View style={styles.container}>
+      
+     
+
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="chevron-back" size={24} color="#FFFFFF" />

@@ -97,14 +97,19 @@ const MainContent = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(home)/index" />
-        <Stack.Screen name="(auth)/sign-in" />
-        <Stack.Screen name="(auth)/sign-up" />
-        <Stack.Screen name="(screens)/With-an-account" />
+      </TouchableOpacity> */}
+      <Stack screenOptions={{
+        headerShown: false, // Hides the header globally
+      }}>
+        <Stack.Screen name="(home)/index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="(screens)/HomeScreen"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </View>
   );

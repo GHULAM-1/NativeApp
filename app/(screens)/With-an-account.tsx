@@ -2,16 +2,24 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import Header from "@/components/Header";
 
 const HomeOptions = () => {
   return (
+    <>
+      <View style={styles.header}>
+       <Header title="Home"  />
+       </View>
     <View style={styles.container}>
+<<<<<<< HEAD
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
       </TouchableOpacity>
 
       {/* Form Button */}
+=======
+>>>>>>> add/avatar
       <TouchableOpacity
         style={styles.touchableButton}
         onPress={() => router.push("/Form")}
@@ -55,6 +63,7 @@ const HomeOptions = () => {
         </View>
       </TouchableOpacity>
     </View>
+    </>
   );
 };
 
@@ -66,6 +75,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
+<<<<<<< HEAD
   backButton: {
     position: "absolute",
     top: 40,
@@ -77,6 +87,15 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+=======
+  header: {
+    marginTop:26,
+    padding:0,
+  },
+  buttonWrapper: {
+    width: "70%", // Ensure the entire button takes up 70% of the width
+    marginVertical: 10, // Spacing between buttons
+>>>>>>> add/avatar
   },
   touchableButton: {
     width: "70%",
