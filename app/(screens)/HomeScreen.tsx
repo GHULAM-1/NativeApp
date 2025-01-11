@@ -16,7 +16,6 @@ const HomeScreen: React.FC = () => {
       </TouchableOpacity>
 
       <View style={styles.buttonContainer}>
-        {/* Use With An Account */}
         <TouchableOpacity
           style={styles.button}
           onPress={() => router.push("/(auth)/sign-in")}
