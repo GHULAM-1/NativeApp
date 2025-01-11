@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "nativeApp",
-    "slug": "nativeApp",
+    "name": "careerquest",
+    "slug": "careerquest",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -36,6 +36,20 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "03eb78c1-0a65-4a2d-9cb7-f3a3cf2ab92c"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/03eb78c1-0a65-4a2d-9cb7-f3a3cf2ab92c"
     }
   }
 }
