@@ -1,36 +1,54 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { careerOptions } from "@/lib/data'/form-result-data";
 import { CareerOption } from "@/lib/types/form-result-type";
+import { router } from "expo-router";
 
 const CareerSuggestionsScreen: React.FC = () => {
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <Text style={styles.header}>
-        Based on your responses, here are a few career options that might be best for you:
-      </Text>
+    <>
+      <View>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push("/With-an-account")}
+        >
+          <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.container}>
+        {/* Header */}
+        <Text style={styles.header}>
+          Based on your responses, here are a few career options that might be
+          best for you:
+        </Text>
 
-      {/* Career Options List */}
-      <FlatList
-        data={careerOptions}
-        keyExtractor={(item: CareerOption) => item.id}
-        renderItem={({ item }: { item: CareerOption }) => (
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name={item.icon} size={30} color="#000" />
-              <Text style={styles.cardTitle}>{item.title}</Text>
+        {/* Career Options List */}
+        <FlatList
+          data={careerOptions}
+          keyExtractor={(item: CareerOption) => item.id}
+          renderItem={({ item }: { item: CareerOption }) => (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Ionicons name={item.icon} size={30} color="#000" />
+                <Text style={styles.cardTitle}>{item.title}</Text>
+              </View>
+              <Text style={styles.cardNote}>
+                <Text style={styles.boldText}>Note: </Text>
+                {item.note}
+              </Text>
             </View>
-            <Text style={styles.cardNote}>
-              <Text style={styles.boldText}>Note: </Text>
-              {item.note}
-            </Text>
-          </View>
-        )}
-        contentContainerStyle={styles.listContainer}
-      />
-    </View>
+          )}
+          contentContainerStyle={styles.listContainer}
+        />
+      </View>
+    </>
   );
 };
 
@@ -39,6 +57,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F7FA",
     padding: 20,
+    marginTop:80,
+  },
+  backButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    backgroundColor: "black",
+    borderRadius: 25,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    zIndex: 1,
   },
   header: {
     fontSize: 16,

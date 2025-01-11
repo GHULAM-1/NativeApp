@@ -2,8 +2,12 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Image } from "expo-image";
 
 const HomeScreen: React.FC = () => {
+  const signin = require("../../assets/careerquest logos and icons/icons/sign in.png");
+  const notSignin = require("../../assets/careerquest logos and icons/icons/without sign in.png");
+
   return (
     <View style={styles.container}>
       {/* Back Button */}
@@ -18,12 +22,7 @@ const HomeScreen: React.FC = () => {
           onPress={() => router.push("/(auth)/sign-in")}
         >
           <Text style={styles.text}>Use With An Account</Text>
-          <Ionicons
-            name="person"
-            size={24}
-            color="#000"
-            style={styles.icon1}
-          />
+          <Image source={signin} style={styles.image2} contentFit="contain" />
         </TouchableOpacity>
 
         {/* Use Without An Account */}
@@ -32,12 +31,8 @@ const HomeScreen: React.FC = () => {
           onPress={() => router.push("/(screens)/Without-an-account")}
         >
           <Text style={styles.text}>Use Without An Account</Text>
-          <Ionicons
-            name="person-remove"
-            size={24}
-            color="#000"
-            style={styles.icon}
-          />
+          <Image source={notSignin} style={styles.image} contentFit="contain" />
+
         </TouchableOpacity>
       </View>
     </View>
@@ -51,6 +46,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+  },
+  image: {
+    width: 80,
+    height: 30,
+  },
+  image2: {
+    width: 80,
+    marginLeft:20,
+    height: 35,
   },
   backButton: {
     position: "absolute",

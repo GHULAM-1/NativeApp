@@ -5,6 +5,7 @@ import { questions } from "@/lib/data'/form-data";
 import { Question } from "@/lib/types/form-type";
 import { router } from "expo-router";
 import { Button } from "react-native-paper";
+import { Image } from "expo-image";
 
 const QuizScreen: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -35,6 +36,8 @@ const QuizScreen: React.FC = () => {
     // Move to the next question
     handleNext();
   };
+  const next = require("../../assets/careerquest logos and icons/icons/next.png");
+  const back = require("../../assets/careerquest logos and icons/icons/previous.png");
 
   const allQuestionsAnswered = answers.every((answer) => answer);
 
@@ -64,11 +67,7 @@ const QuizScreen: React.FC = () => {
             onPress={handlePrevious}
             disabled={currentQuestionIndex === 0}
           >
-            <Ionicons
-              name="arrow-back-circle-outline"
-              size={32}
-              color={currentQuestionIndex === 0 ? "#D3D3D3" : "#0000FF"}
-            />
+            <Image source={back} style={styles.image} contentFit="contain" />
           </TouchableOpacity>
 
           <Text style={styles.pagination}>
@@ -79,15 +78,7 @@ const QuizScreen: React.FC = () => {
             onPress={handleNext}
             disabled={currentQuestionIndex === questions.length - 1}
           >
-            <Ionicons
-              name="arrow-forward-circle-outline"
-              size={32}
-              color={
-                currentQuestionIndex === questions.length - 1
-                  ? "#D3D3D3"
-                  : "#0000FF"
-              }
-            />
+            <Image source={next} style={styles.image} contentFit="contain" />
           </TouchableOpacity>
         </View>
 
@@ -115,6 +106,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F7FA",
     padding: 20,
   },
+  image: {
+    width: 70,
+    height: 30,
+  },
   backButton: {
     position: "absolute",
     top: 40,
@@ -126,7 +121,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    zIndex:1,
+    zIndex: 1,
   },
   question: {
     fontSize: 18,

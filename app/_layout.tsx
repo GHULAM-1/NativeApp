@@ -6,6 +6,7 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { tokenCache } from "@/cache";
 import { ClerkProvider, ClerkLoaded, useAuth } from "@clerk/clerk-expo";
+import { Image } from "expo-image";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
@@ -16,6 +17,8 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  const splash = require("../assets/careerquest logos and icons/front logo.png");
+
   const [isSplashVisible, setIsSplashVisible] = useState(true);
 
   const [fontsLoaded] = useFonts({
@@ -32,7 +35,7 @@ export default function RootLayout() {
   if (isSplashVisible) {
     return (
       <View style={styles.splashContainer}>
-        <Text style={styles.splashText}>CareerQuest</Text>
+          <Image source={splash} style={styles.image} contentFit="contain" />
       </View>
     );
   }
@@ -81,6 +84,10 @@ const MainContent = () => {
 };
 
 const styles = StyleSheet.create({
+  image: {
+    width: 400,
+    height: 400,
+  },
   splashContainer: {
     flex: 1,
     justifyContent: "center",
