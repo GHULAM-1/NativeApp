@@ -34,16 +34,21 @@ const CareerSuggestionsScreen: React.FC = () => {
           data={careerOptions}
           keyExtractor={(item: CareerOption) => item.id}
           renderItem={({ item }: { item: CareerOption }) => (
-            <View style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Ionicons name={item.icon} size={30} color="#000" />
-                <Text style={styles.cardTitle}>{item.title}</Text>
+            <TouchableOpacity
+              onPress={() => router.push(`/University-Screen`)}
+              activeOpacity={0.8} // Navigate to a detailed screen
+            >
+              <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <Ionicons name={item.icon} size={30} color="#000" />
+                  <Text style={styles.cardTitle}>{item.title}</Text>
+                </View>
+                <Text style={styles.cardNote}>
+                  <Text style={styles.boldText}>Note: </Text>
+                  {item.note}
+                </Text>
               </View>
-              <Text style={styles.cardNote}>
-                <Text style={styles.boldText}>Note: </Text>
-                {item.note}
-              </Text>
-            </View>
+            </TouchableOpacity>
           )}
           contentContainerStyle={styles.listContainer}
         />
@@ -57,7 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F7FA",
     padding: 20,
-    marginTop:80,
+    paddingTop: 100,
   },
   backButton: {
     position: "absolute",
