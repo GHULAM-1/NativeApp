@@ -7,6 +7,9 @@ import { StatusBar } from "expo-status-bar";
 import { tokenCache } from "@/cache";
 import { Image } from "expo-image";
 import { ClerkProvider, ClerkLoaded, useAuth, useSession } from "@clerk/clerk-expo";
+import { useUserStore } from "@/store/useUserStore";
+import uuid from "react-native-uuid";
+import { createUserInFirestore } from "@/lib/api/api";
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
@@ -17,6 +20,7 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+
   const splash = require("../assets/careerquest logos and icons/front logo.png");
 
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -56,10 +60,11 @@ export default function RootLayout() {
 
 const MainContent = () => {
   const router = useRouter();
+  const setUser = useUserStore((state) => state.setUser); // Access setUser from Zustand
   const { signOut, getToken } = useAuth();
   const { session, isLoaded } = useSession();
 
-  // Ensure session is checked when the app becomes active
+  // Ensure session is checked when the app becomes active (when close and reopen app)
   useEffect(() => {
     const handleAppStateChange = async (nextAppState:AppStateStatus) => {
       if (nextAppState === "active") {
@@ -85,6 +90,27 @@ const MainContent = () => {
     if (isLoaded) {
       if (session) {
         console.log("Session found. Redirecting to With-an-account...");
+  
+        // Fetch user data from Clerk session
+        const userId = session.user?.id; // Use Clerk user ID
+        const email = session.user?.primaryEmailAddress?.emailAddress || "Unknown Email"; // Access emailAddress
+        const name = session.user?.firstName || "Unknown User";
+  
+        // Update Zustand state
+        setUser(name, email, userId);
+  
+        // Send to Firebase
+        const userData = { id: userId, name, email_address: email };
+        createUserInFirestore(userData)
+          .then((response) => {
+            if (response.alreadyExists) {
+              console.log("User already exists in Firebase.");
+            } else {
+              console.log("User created successfully in Firebase.");
+            }
+          })
+          .catch((err) => console.error("Error creating user in Firebase:", err));
+  
         router.replace("/(screens)/With-an-account");
       } else {
         console.log("No session found. Redirecting to sign-in...");
@@ -92,6 +118,9 @@ const MainContent = () => {
       }
     }
   }, [isLoaded, session]);
+  
+  
+  
 
   const handleLogout = async () => {
     await signOut();

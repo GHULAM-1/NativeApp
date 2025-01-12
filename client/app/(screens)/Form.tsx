@@ -1,45 +1,83 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { questions } from "@/lib/data'/form-data";
-import { Question } from "@/lib/types/form-type";
 import { router } from "expo-router";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
+import { fetchAllQuestions } from "@/lib/api/api";
 
 const QuizScreen: React.FC = () => {
+  const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<boolean[]>(
-    Array(questions.length).fill(false)
-  );
+  const [formQuestions, setFormQuestions] = useState<
+    {
+      question_id: string;
+      text: string;
+      options: string[];
+    }[]
+  >([]);
+  const [lastOptionSelected, setLastOptionSelected] = useState(false);
 
-  const currentQuestion: Question = questions[currentQuestionIndex];
+  useEffect(() => {
+    const loadQuestions = async () => {
+      try {
+        const fetchedQuestions = await fetchAllQuestions();
+        setFormQuestions(fetchedQuestions); // Store questions in state
+      } catch (error) {
+        console.error("Error loading questions:", error);
+      } finally {
+        setLoading(false); // Update loading state
+      }
+    };
+
+    loadQuestions();
+  }, []);
 
   const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (currentQuestionIndex < formQuestions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+      setLastOptionSelected(false); // Reset for the next question
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
+      setLastOptionSelected(false); // Reset for the previous question
     }
   };
 
   const handleOptionSelect = (index: number) => {
-    // Mark the current question as answered
-    const updatedAnswers = [...answers];
-    updatedAnswers[currentQuestionIndex] = true;
-    setAnswers(updatedAnswers);
+    // Check if the last option is selected
+    const isLastOption = index === formQuestions[currentQuestionIndex].options.length - 1;
+    setLastOptionSelected(isLastOption);
 
-    // Move to the next question
-    handleNext();
+    // Move to the next question automatically if not the last question
+    if (currentQuestionIndex < formQuestions.length - 1) {
+      handleNext();
+    }
   };
+
   const next = require("../../assets/careerquest logos and icons/icons/next.png");
   const back = require("../../assets/careerquest logos and icons/icons/previous.png");
 
-  const allQuestionsAnswered = answers.every((answer) => answer);
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (formQuestions.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text>No questions available.</Text>
+      </View>
+    );
+  }
+
+  const currentQuestion = formQuestions[currentQuestionIndex];
 
   return (
     <>
@@ -48,7 +86,7 @@ const QuizScreen: React.FC = () => {
       </TouchableOpacity>
       <View style={styles.container}>
         {/* Question */}
-        <Text style={styles.question}>{currentQuestion.question}</Text>
+        <Text style={styles.question}>{currentQuestion.text}</Text>
 
         {/* Options */}
         {currentQuestion.options.map((option, index) => (
@@ -71,28 +109,27 @@ const QuizScreen: React.FC = () => {
           </TouchableOpacity>
 
           <Text style={styles.pagination}>
-            {currentQuestionIndex + 1} of {questions.length}
+            {currentQuestionIndex + 1} of {formQuestions.length}
           </Text>
 
           <TouchableOpacity
             onPress={handleNext}
-            disabled={currentQuestionIndex === questions.length - 1}
+            disabled={currentQuestionIndex === formQuestions.length - 1}
           >
             <Image source={next} style={styles.image} contentFit="contain" />
           </TouchableOpacity>
         </View>
 
         {/* Submit Button */}
-        {allQuestionsAnswered &&
-          currentQuestionIndex === questions.length - 1 && (
-            <Button
-              mode="contained"
-              style={styles.submitButton}
-              onPress={() => router.push("/Form-Result")}
-            >
-              Submit
-            </Button>
-          )}
+        {currentQuestionIndex === formQuestions.length - 1 && lastOptionSelected && (
+          <Button
+            mode="contained"
+            style={styles.submitButton}
+            onPress={() => router.push("/Form-Result")}
+          >
+            Submit
+          </Button>
+        )}
       </View>
     </>
   );

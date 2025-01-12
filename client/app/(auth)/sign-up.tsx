@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, StyleSheet, Alert } from "react-native";
 import { TextInput, Button, Card, Title } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import { useSignUp,useOAuth } from "@clerk/clerk-expo";
+import { useSignUp, useOAuth, useUser, useSession } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import { createUserInFirestore } from "@/lib/api/api";
+import uuid from "react-native-uuid";
+import { useUserStore } from "@/store/useUserStore";
 
 export const useWarmUpBrowser = () => {
   React.useEffect(() => {
@@ -19,67 +22,131 @@ export const useWarmUpBrowser = () => {
 WebBrowser.maybeCompleteAuthSession();
 
 export default function SignUpScreen() {
-
   useWarmUpBrowser();
+  const { user } = useUser();
+  const { name, email, id } = useUserStore();
+  const { session } = useSession();
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const router = useRouter();
 
   const [emailAddress, setEmailAddress] = useState("");
+  const [namee, setNamee] = useState(""); // New state for the Name field
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Toggle password visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Toggle confirm password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const setUser = useUserStore((state) => state.setUser); // Access setUser from Zustand
 
+  const extractNameFromEmail = (email: string): string => {
+    if (!email || !email.includes("@")) {
+      return "Unknown User"; // Fallback if the email is invalid
+    }
 
-  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_google' });
+    // Extract the part before the '@' symbol
+    const localPart = email.split("@")[0];
 
-  const handleGoogle = React.useCallback(async () => {
+    // Replace dots, underscores, and hyphens with spaces
+    const name = localPart
+      .replace(/[._-]/g, " ")
+      .replace(/\s+/g, " ") // Remove extra spaces
+      .trim();
+
+    // Capitalize the first letter of each word
+    return name
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  const handleGoogle = useCallback(async () => {
     if (!setActive) {
-      console.error('setActive is undefined');
+      console.error("setActive is undefined");
       return;
     }
 
     try {
       const { createdSessionId } = await startOAuthFlow({
-        redirectUrl: Linking.createURL('/(screens)/With-an-account', { scheme: 'myapp' }),
+        redirectUrl: Linking.createURL("/(screens)/With-an-account", {
+          scheme: "myapp",
+        }),
       });
 
       if (createdSessionId) {
         await setActive({ session: createdSessionId });
-        router.replace('/(screens)/With-an-account');
+
+        // Fetch user data from Clerk
+        const userId = uuid.v4();
+        const user = session?.user || {};
+        console.log(user, "from signup");
+        const name = user || "Unknown User";
+        const email = user || "Unknown Email";
+
+        // Send to Firebase
+        const userData = { id: userId, name, email_address: email };
+        createUserInFirestore(userData)
+          .then((response) => {
+            if (response.alreadyExists) {
+              console.log("User already exists in Firebase.");
+            } else {
+              console.log("User created successfully in Firebase.");
+            }
+          })
+          .catch((err) => console.error("Error creating user in Firebase:", err));
+
+        router.replace("/(screens)/With-an-account");
       } else {
-        console.error('OAuth sign-in not complete');
+        console.error("OAuth sign-up not complete");
       }
     } catch (err) {
-      console.error('OAuth Sign-In Error:', err);
+      console.error("OAuth Sign-Up Error:", err);
     }
-  }, [startOAuthFlow, setActive, router]);
+  }, [startOAuthFlow, setActive, session, setUser, router]);
 
   const onSignUpPress = async () => {
     if (!isLoaded) return;
-
+  
     if (password !== confirmPassword) {
       Alert.alert("Error", "Passwords do not match!");
       return;
     }
-
+  
     try {
-      await signUp.create({
+      // Pass the name field along with email and password to Clerk
+      const signUpAttempt = await signUp.create({
         emailAddress,
         password,
+        firstName: namee, // Adding Name Field
       });
-
+  
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
-
+  
       setPendingVerification(true);
+  
+      // Get Clerk user data
+      const userId = signUpAttempt.id; // Use Clerk user ID
+      const name = namee;
+      const email = emailAddress;
+  
+      // Send to Firebase
+      const userData = { id: userId, name, email_address: email };
+      await createUserInFirestore(userData)
+        .then((response) => {
+          if (response.alreadyExists) {
+            console.log("User already exists in Firebase.");
+          } else {
+            console.log("User created successfully in Firebase.");
+          }
+        })
+        .catch((err) => console.error("Error creating user in Firebase:", err));
     } catch (err) {
       console.error("Sign-Up Error:", JSON.stringify(err, null, 2));
       Alert.alert("Sign-Up Failed", "Please try again later.");
     }
   };
-
+  
   const onVerifyPress = async () => {
     if (!isLoaded) return;
 
@@ -90,11 +157,23 @@ export default function SignUpScreen() {
 
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace('/(screens)/With-an-account');
+        const userId = uuid.v4();
+
+        // Prepare user data and call Firestore API
+        const userData = {
+          id: id,
+          name: namee,
+          email_address: emailAddress,
+        };
+        console.log("User data for Firestore:", userData);
+        await createUserInFirestore(userData);
+
+        router.replace("/(screens)/With-an-account");
       } else {
         Alert.alert("Verification Failed", "Please try again.");
       }
     } catch (err) {
+      console.error("Verification Error:", err);
       Alert.alert("Verification Failed", "Invalid code. Please try again.");
     }
   };
@@ -131,7 +210,6 @@ export default function SignUpScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
       <Button
         style={styles.backButton}
         mode="text"
@@ -145,6 +223,15 @@ export default function SignUpScreen() {
         <Card.Content>
           <Title style={styles.title}>Sign Up</Title>
 
+          <TextInput
+            label="Enter Your Name"
+            mode="outlined"
+            value={namee}
+            onChangeText={setNamee}
+            style={styles.input}
+            outlineColor="#D9D9D9"
+            activeOutlineColor="#0000FF"
+          />
           <TextInput
             label="Enter Your Email"
             mode="outlined"
@@ -165,7 +252,7 @@ export default function SignUpScreen() {
             activeOutlineColor="#0000FF"
             right={
               <TextInput.Icon
-                icon={showPassword ? "eye-off-outline" : "eye-outline"} // Use valid icons
+                icon={showPassword ? "eye-off-outline" : "eye-outline"}
                 onPress={() => setShowPassword(!showPassword)}
               />
             }
@@ -182,7 +269,7 @@ export default function SignUpScreen() {
             activeOutlineColor="#0000FF"
             right={
               <TextInput.Icon
-                icon={showConfirmPassword ? "eye-off-outline" : "eye-outline"} // Use valid icons
+                icon={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               />
             }
@@ -222,13 +309,6 @@ const styles = StyleSheet.create({
     left: 20,
     zIndex: 1,
   },
-  googleButton: {
-    marginBottom: 20,
-    borderRadius: 10,
-    marginTop:10,
-    borderColor: '#0000FF',
-    width: "100%", // Ensures button takes full width
-  },
   card: {
     borderRadius: 20,
     padding: 20,
@@ -249,5 +329,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 10,
     backgroundColor: "#0000FF",
+  },
+  googleButton: {
+    marginBottom: 20,
+    borderRadius: 10,
+    marginTop: 10,
+    borderColor: "#0000FF",
+    width: "100%",
   },
 });

@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image } from "expo-image";
+import { useUserStore } from "@/store/useUserStore";
 
 const HomeOptions = () => {
   const form = require("../../assets/careerquest logos and icons/icons/form.png");
   const connect = require("../../assets/careerquest logos and icons/icons/connect.png");
   const chatbot = require("../../assets/careerquest logos and icons/icons/AI Chatbot.png");
   const aolevel = require("../../assets/careerquest logos and icons/icons/article.png");
+  const { name, email, id } = useUserStore();
+  
+  console.log(name, email, id);
+ 
+
   return (
     <View style={styles.container}>
       {/* Back Button */}
@@ -25,11 +31,7 @@ const HomeOptions = () => {
         onPress={() => router.push("/Form")}
       >
         <View style={styles.buttonContent}>
-          <Image
-            source={form}
-            style={styles.image}
-            contentFit="contain"
-          />
+          <Image source={form} style={styles.image} contentFit="contain" />
 
           <Text style={styles.text}>Form</Text>
         </View>
@@ -41,11 +43,7 @@ const HomeOptions = () => {
         onPress={() => router.push("/Quest-Connect")}
       >
         <View style={styles.buttonContent}>
-          <Image
-            source={connect}
-            style={styles.image}
-            contentFit="contain"
-          />
+          <Image source={connect} style={styles.image} contentFit="contain" />
 
           <Text style={styles.text}>Quest Connect</Text>
         </View>
@@ -57,11 +55,7 @@ const HomeOptions = () => {
         onPress={() => router.push("/Form")}
       >
         <View style={styles.buttonContent}>
-        <Image
-            source={chatbot}
-            style={styles.image}
-            contentFit="contain"
-          />
+          <Image source={chatbot} style={styles.image} contentFit="contain" />
 
           <Text style={styles.text}>AI Chatbot</Text>
         </View>
@@ -73,11 +67,7 @@ const HomeOptions = () => {
         onPress={() => router.push("/Equivalence-Info-Screen")}
       >
         <View style={styles.buttonContent}>
-        <Image
-            source={aolevel}
-            style={styles.image2}
-            contentFit="contain"
-          />
+          <Image source={aolevel} style={styles.image2} contentFit="contain" />
           <Text style={styles.text}>A / O Level Student Guide</Text>
         </View>
       </TouchableOpacity>
@@ -95,11 +85,11 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 70,
-    height:30,
+    height: 30,
   },
-  image2:{
+  image2: {
     width: 70,
-    height:60
+    height: 60,
   },
   backButton: {
     position: "absolute",

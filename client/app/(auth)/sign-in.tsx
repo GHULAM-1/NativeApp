@@ -1,13 +1,21 @@
-import React ,{useState} from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { TextInput, Button, Card, Title } from 'react-native-paper';
-import { useSignIn, useOAuth } from '@clerk/clerk-expo';
-import { useRouter, Link } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
-import * as Linking from 'expo-linking';
-import { TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
+import React, { useCallback, useState } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import { TextInput, Button, Card, Title } from "react-native-paper";
+import { useSignIn, useOAuth } from "@clerk/clerk-expo";
+import { useRouter, Link } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import * as Linking from "expo-linking";
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { createUserInFirestore } from "@/lib/api/api";
+import uuid from "react-native-uuid";
+import { useUserStore } from "@/store/useUserStore";
+import {
+  ClerkProvider,
+  ClerkLoaded,
+  useAuth,
+  useSession,
+} from "@clerk/clerk-expo";
 
 // Warm-up the browser for better user experience during OAuth flow
 export const useWarmUpBrowser = () => {
@@ -24,27 +32,74 @@ WebBrowser.maybeCompleteAuthSession();
 export default function SignInScreen() {
   useWarmUpBrowser();
 
+  const { name, email, id } = useUserStore();
+  const { session } = useSession();
+
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
-  const [emailAddress, setEmailAddress] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [showPassword, setShowPassword] = useState(false); 
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
+  const extractNameFromEmail = (email: string): string => {
+    if (!email || !email.includes("@")) {
+      return "Unknown User"; // Fallback if the email is invalid
+    }
 
-  const handleGoogle = React.useCallback(async () => {
+    // Extract the part before the '@' symbol
+    const localPart = email.split("@")[0];
+
+    // Replace dots, underscores, and hyphens with spaces
+    const name = localPart
+      .replace(/[._-]/g, " ")
+      .replace(/\s+/g, " ") // Remove extra spaces
+      .trim();
+
+    // Capitalize the first letter of each word
+    return name
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+  const handleGoogle = useCallback(async () => {
     if (!setActive) {
       console.error("setActive is undefined");
       return;
     }
-
+  
     try {
       const { createdSessionId } = await startOAuthFlow({
-        redirectUrl: Linking.createURL("/(screens)/With-an-account", { scheme: "myapp" }),
+        redirectUrl: Linking.createURL("/(screens)/With-an-account", {
+          scheme: "myapp",
+        }),
       });
-
+  
       if (createdSessionId) {
         await setActive({ session: createdSessionId });
+  
+        // Get user data from Clerk
+        const userId = uuid.v4();
+        const user = session?.user || {};
+        console.log(user,"from signin")
+        // const name = user?.fullName || "Unknown User";
+        // const email = user?.primaryEmailAddress?.emailAddress || "Unknown Email";
+  
+        // Update Zustand
+        // setUser(name, email, userId);
+  
+        // Save to Firebase
+        const userData = { id: userId, name, email_address: email };
+        createUserInFirestore(userData)
+          .then((response) => {
+            if (response.alreadyExists) {
+              console.log("User already exists in Firebase.");
+            } else {
+              console.log("User created successfully in Firebase.");
+            }
+          })
+          .catch((err) => console.error("Error creating user in Firebase:", err));
+  
         router.replace("/(screens)/With-an-account");
       } else {
         console.error("OAuth sign-in not complete");
@@ -52,7 +107,8 @@ export default function SignInScreen() {
     } catch (err) {
       console.error("OAuth Sign-In Error:", err);
     }
-  }, [startOAuthFlow, setActive, router]);
+  }, [startOAuthFlow, setActive, session, router]);
+  
 
   const handleEmailSignIn = React.useCallback(async () => {
     if (!isLoaded || !setActive) {
@@ -68,6 +124,7 @@ export default function SignInScreen() {
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
+        console.log("sign in using email");
         router.replace("/(screens)/With-an-account");
       } else {
         console.error("Sign-in not complete:", signInAttempt);
@@ -80,7 +137,10 @@ export default function SignInScreen() {
   return (
     <View style={styles.container}>
       {/* Custom Back Button */}
-      <TouchableOpacity style={styles.customBackButton} onPress={() => router.back()}>
+      <TouchableOpacity
+        style={styles.customBackButton}
+        onPress={() => router.back()}
+      >
         <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
       </TouchableOpacity>
 
@@ -128,7 +188,11 @@ export default function SignInScreen() {
           </Button>
 
           {/* Sign-In Button */}
-          <Button mode="contained" style={styles.signInButton} onPress={handleEmailSignIn}>
+          <Button
+            mode="contained"
+            style={styles.signInButton}
+            onPress={handleEmailSignIn}
+          >
             Sign In
           </Button>
 
@@ -217,4 +281,3 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
 });
-

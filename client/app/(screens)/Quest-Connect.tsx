@@ -1,50 +1,131 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { posts } from "@/lib/data'/post-data";
-import { Post } from "@/lib/types/post-type";
-import { notifications } from "@/lib/data'/notification";
-import { Notification } from "@/lib/types/notification";
 import { router } from "expo-router";
 import { Button, Modal, TextInput } from "react-native-paper";
 import { Image } from "expo-image";
+import { useUserStore } from "@/store/useUserStore";
+import { fetchPosts, likePost, addPost } from "@/lib/api/api";
 
 const QuestConnectScreen: React.FC = () => {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
-  const [isSplashVisible, setIsSplashVisible] = useState(true); // Track splash screen visibility
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
+  const { name, email, id: userId } = useUserStore();
+  const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
-    // Simulate splash screen for 3 seconds
     const timer = setTimeout(() => {
-      setIsSplashVisible(false); // Hide splash screen after 3 seconds
+      setIsSplashVisible(false);
     }, 3000);
 
-    return () => clearTimeout(timer); // Clean up the timer on component unmount
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleAddPost = () => {
-    console.log("New Post:", newPost);
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return "Invalid Date"; // Handle invalid or missing dates
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Invalid Date"; // Handle invalid dates
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+  };
+
+  const handleAddPost = async () => {
+    if (!newPost.trim()) {
+      alert("Post content cannot be empty.");
+      return;
+    }
+
+    const postId = `${userId}-${Date.now()}`;
+    const postDate = new Date().toISOString(); // Ensure valid ISO date string
+
+    const newPostData = {
+      id: postId,
+      username: name || "Anonymous",
+      date: postDate,
+      text: newPost,
+      likes: 0,
+      likedBy: [],
+    };
+
+    // Optimistically update the posts
+    setPosts((prevPosts) => [
+      {
+        ...newPostData,
+        date: formatDate(postDate), // Format the date for immediate display
+      },
+      ...prevPosts,
+    ]);
+
+    // Clear the input and close the dialog
     setNewPost("");
     setIsDialogVisible(false);
+
+    try {
+      // Make the API call to save the post
+      await addPost(newPostData);
+    } catch (error) {
+      console.error("Error adding post:", error);
+
+      // Optionally, show an error message or rollback the optimistic update
+      alert("Failed to add the post. Please try again.");
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+    }
   };
+
+  const handleLike = async (postId: string) => {
+    try {
+      if (userId) {
+        const updatedPost = await likePost(postId, userId);
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.id === postId ? { ...post, ...updatedPost } : post
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const fetchedPosts = await fetchPosts();
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+
+    loadPosts();
+  }, []);
 
   const logo = require("../../assets/careerquest logos and icons/front logo.png");
   const splash = require("../../assets/careerquest logos and icons/quest connect.png");
+
   if (isSplashVisible) {
     return (
       <View style={styles.splashContainer}>
         <Image source={splash} style={styles.splashLogo} contentFit="cover" />
         <Text style={styles.splashText}>Quest Connect</Text>
-
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <TouchableOpacity
@@ -78,43 +159,45 @@ const QuestConnectScreen: React.FC = () => {
         </View>
       </View>
 
-      {/* Notification Dropdown */}
-      {showNotifications && (
-        <View style={styles.notificationDropdown}>
-          <FlatList
-            data={notifications}
-            keyExtractor={(item: Notification) => item.id}
-            renderItem={({ item }: { item: Notification }) => (
-              <View style={styles.notificationItem}>
-                <Text style={styles.notificationTitle}>{item.title}</Text>
-                <Text style={styles.notificationMessage}>{item.message}</Text>
-                <Text style={styles.notificationDate}>{item.date}</Text>
-              </View>
-            )}
-          />
-        </View>
-      )}
-
-      {/* Posts List */}
       <FlatList
         data={posts}
-        keyExtractor={(item: Post) => item.id}
-        renderItem={({ item }: { item: Post }) => (
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
           <View style={styles.postCard}>
             <View style={styles.postHeader}>
               <Ionicons name="person-circle-outline" size={24} color="#000" />
               <View style={styles.postInfo}>
-                <Text style={styles.personName}>{item.personName}</Text>
-                <Text style={styles.date}>{item.date}</Text>
+                <Text style={styles.personName}>{item.username}</Text>
+                <Text style={styles.date}>{formatDate(item.date)}</Text>
               </View>
             </View>
-            <Text style={styles.postContent}>{item.content}</Text>
+            <View style={styles.postContentContainer}>
+              <ScrollView
+                style={styles.scrollableText}
+                nestedScrollEnabled={true}
+                showsVerticalScrollIndicator={true}
+              >
+                <Text style={styles.postContent}>{item.text}</Text>
+              </ScrollView>
+            </View>
+            <View style={styles.postFooter}>
+              <TouchableOpacity onPress={() => handleLike(item.id)}>
+                <Ionicons
+                  name={
+                    item.likedBy?.includes(userId) ? "heart" : "heart-outline"
+                  }
+                  size={24}
+                  color={item.likedBy?.includes(userId) ? "red" : "gray"}
+                  style={styles.heartIcon}
+                />
+              </TouchableOpacity>
+              <Text style={styles.likes}>{item.likes}</Text>
+            </View>
           </View>
         )}
         contentContainerStyle={styles.postsContainer}
       />
 
-      {/* Add Post Dialog */}
       <Modal
         visible={isDialogVisible}
         onDismiss={() => setIsDialogVisible(false)}
@@ -150,6 +233,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8F7FA",
   },
+  likes: {
+    fontSize: 14,
+    color: "#007AFF",
+  },
+  postFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  heartIcon: {
+    marginRight: 5,
+  },
   splashContainer: {
     flex: 1,
     justifyContent: "center",
@@ -159,7 +254,6 @@ const styles = StyleSheet.create({
   splashLogo: {
     width: 400,
     height: 400,
-    
   },
   splashText: {
     fontSize: 18,
@@ -264,6 +358,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
+    maxHeight: 200,
     elevation: 2,
   },
   postHeader: {
@@ -287,6 +382,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#2A2A2A",
   },
+  postContentContainer: {
+    maxHeight: 100, // Set the max height for the container
+    borderColor: "#E0E0E0",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    backgroundColor: "#F9F9F9",
+  },
+  scrollableText: {
+    flexGrow: 0,
+  },
+
   dialog: {
     backgroundColor: "white",
     padding: 20,
