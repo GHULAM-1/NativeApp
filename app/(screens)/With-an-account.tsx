@@ -11,15 +11,6 @@ const HomeOptions = () => {
        <Header title="Home"  />
        </View>
     <View style={styles.container}>
-<<<<<<< HEAD
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
-
-      {/* Form Button */}
-=======
->>>>>>> add/avatar
       <TouchableOpacity
         style={styles.touchableButton}
         onPress={() => router.push("/Form")}
@@ -75,19 +66,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-<<<<<<< HEAD
-  backButton: {
-    position: "absolute",
-    top: 40,
-    left: 20,
-    backgroundColor: "black",
-    borderRadius: 25,
-    padding: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-=======
   header: {
     marginTop:26,
     padding:0,
@@ -95,7 +73,6 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     width: "70%", // Ensure the entire button takes up 70% of the width
     marginVertical: 10, // Spacing between buttons
->>>>>>> add/avatar
   },
   touchableButton: {
     width: "70%",

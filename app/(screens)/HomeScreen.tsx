@@ -1,17 +1,17 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import Header from "@/components/Header"; // Adjust the path to your Header component
 
 const HomeScreen: React.FC = () => {
+  const handleBackPress = () => {
+    BackHandler.exitApp(); // Exits the app
+  };
+
   return (
     <View style={styles.container}>
-      
-     
-
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
       </TouchableOpacity>
 
@@ -22,12 +22,7 @@ const HomeScreen: React.FC = () => {
           onPress={() => router.push("/(auth)/sign-in")}
         >
           <Text style={styles.text}>Use With An Account</Text>
-          <Ionicons
-            name="person"
-            size={24}
-            color="#000"
-            style={styles.icon1}
-          />
+          <Ionicons name="person" size={24} color="#000" style={styles.icon1} />
         </TouchableOpacity>
 
         {/* Use Without An Account */}

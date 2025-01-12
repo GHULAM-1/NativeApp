@@ -131,15 +131,9 @@ export default function SignUpScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
-      <Button
-        style={styles.backButton}
-        mode="text"
-        icon={() => <Ionicons name="arrow-back" size={24} color="black" />}
-        onPress={() => router.back()}
-      >
-        Back
-      </Button>
+         <TouchableOpacity style={styles.customBackButton} onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
 
       <Card style={styles.card}>
         <Card.Content>
@@ -228,6 +222,18 @@ const styles = StyleSheet.create({
     marginTop:10,
     borderColor: '#0000FF',
     width: "100%", // Ensures button takes full width
+  },
+  customBackButton: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+    zIndex: 1,
+    backgroundColor: "#000000", // Black background
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
   },
   card: {
     borderRadius: 20,

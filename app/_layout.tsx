@@ -58,16 +58,21 @@ const MainContent = () => {
 
   // Ensure session is checked when the app becomes active
   useEffect(() => {
-    const handleAppStateChange = async (nextAppState:AppStateStatus) => {
+    const handleAppStateChange = async (nextAppState: AppStateStatus) => {
       if (nextAppState === "active") {
         console.log("App has become active. Checking session...");
-        const token = await getToken(); // Refresh the session token
-        if (token) {
-          console.log("Token refreshed. Session is valid.");
-          router.replace("/(screens)/With-an-account");
-        } else {
-          console.log("No session found. Redirecting to sign-in.");
-          router.replace("/(auth)/sign-in");
+        try {
+          const token = await getToken(); // Refresh the session token
+          if (token) {
+            console.log("Token found. Session is valid.");
+            router.replace("/(screens)/With-an-account");
+          } else {
+            console.log("No token found. Redirecting to HomeScreen...");
+            router.replace("/(screens)/HomeScreen");
+          }
+        } catch (error) {
+          console.error("Error checking token:", error);
+          router.replace("/(screens)/HomeScreen");
         }
       }
     };
@@ -84,25 +89,19 @@ const MainContent = () => {
         console.log("Session found. Redirecting to With-an-account...");
         router.replace("/(screens)/With-an-account");
       } else {
-        console.log("No session found. Redirecting to sign-in...");
-        router.replace("/(auth)/sign-in");
+        console.log("No session found. Redirecting to HomeScreen...");
+        router.replace("/(screens)/HomeScreen");
       }
     }
   }, [isLoaded, session]);
 
-  const handleLogout = async () => {
-    await signOut();
-    router.push("/(home)"); // Redirect to the home screen
-  };
-
   return (
     <View style={{ flex: 1 }}>
-      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity> */}
-      <Stack screenOptions={{
-        headerShown: false, // Hides the header globally
-      }}>
+      <Stack
+        screenOptions={{
+          headerShown: false, // Hides the header globally
+        }}
+      >
         <Stack.Screen name="(home)/index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
@@ -114,6 +113,7 @@ const MainContent = () => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   splashContainer: {

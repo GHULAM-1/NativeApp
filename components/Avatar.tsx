@@ -11,9 +11,11 @@ import {
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import AccountSettings from "./AccountSettings"; // Path to the new component
 
 const ProfileMenu = () => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
   const { signOut } = useAuth();
   const { user } = useUser();
   const router = useRouter();
@@ -27,6 +29,11 @@ const ProfileMenu = () => {
     }
   };
 
+  const handleOpenSettings = () => {
+    setModalVisible(false); // Close main modal
+    setSettingsVisible(true); // Open Account Settings modal
+  };
+
   return (
     <View>
       {/* Avatar Button with Profile Image */}
@@ -35,16 +42,13 @@ const ProfileMenu = () => {
         style={styles.avatarButton}
       >
         {user?.imageUrl ? (
-          <Image
-            source={{ uri: user.imageUrl }}
-            style={styles.profileImage}
-          />
+          <Image source={{ uri: user.imageUrl }} style={styles.profileImage} />
         ) : (
           <Ionicons name="person-circle" size={40} color="#000" />
         )}
       </TouchableOpacity>
 
-      {/* Modal for Profile Menu */}
+      {/* Main Modal for Profile Menu */}
       <Modal
         transparent
         visible={modalVisible}
@@ -53,21 +57,13 @@ const ProfileMenu = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.username}>
-              {user?.fullName || "Welcome"}
-            </Text>
+            <Text style={styles.username}>{user?.fullName || "Welcome"}</Text>
             <Text style={styles.email}>
-              {user?.primaryEmailAddress?.emailAddress}
+              {user?.primaryEmailAddress?.emailAddress || "No email found"}
             </Text>
 
-            {/* Account Settings */}
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                setModalVisible(false);
-                Alert.alert("Info", "Account settings coming soon!");
-              }}
-            >
+            {/* Account Settings Option */}
+            <TouchableOpacity style={styles.menuItem} onPress={handleOpenSettings}>
               <Text style={styles.menuText}>Account Settings</Text>
             </TouchableOpacity>
 
@@ -92,6 +88,12 @@ const ProfileMenu = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Account Settings Modal */}
+      <AccountSettings
+        visible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+      />
     </View>
   );
 };
@@ -134,6 +136,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     width: "100%",
+    marginTop: 10,
   },
   menuText: {
     fontSize: 16,

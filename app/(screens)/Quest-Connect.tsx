@@ -12,6 +12,7 @@ import { posts } from "@/lib/data'/post-data";
 import { Post } from "@/lib/types/post-type";
 import { router } from "expo-router";
 import { Modal, Button } from "react-native-paper";
+import Header from "@/components/Header";
 
 const QuestConnectScreen: React.FC = () => {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
@@ -24,6 +25,10 @@ const QuestConnectScreen: React.FC = () => {
   };
 
   return (
+    <>
+    <View style={styles.topHeader}>
+      <Header title="Home" />
+    </View>
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -51,7 +56,6 @@ const QuestConnectScreen: React.FC = () => {
               style={styles.icon}
             />
           </TouchableOpacity>
-          <Ionicons name="person" size={24} color="#000" />
         </View>
       </View>
 
@@ -102,6 +106,7 @@ const QuestConnectScreen: React.FC = () => {
         </View>
       </Modal>
     </View>
+    </>
   );
 };
 
@@ -114,6 +119,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  topHeader: {
+    marginTop:26,
+    padding:0,
   },
   header: {
     flexDirection: "row",

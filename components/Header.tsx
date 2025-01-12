@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 100, // Adjust width according to your logo's size
-    height: 100,
-    alignItems:"baseline" // Adjust height according to your logo's size
+    height: 110,
+     // Adjust height according to your logo's size
   },
 });
 

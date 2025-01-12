@@ -6,6 +6,14 @@ import { router } from "expo-router";
 const FormPromptScreen: React.FC = () => {
   return (
     <View style={styles.container}>
+      {/* Sign Up Button */}
+      <TouchableOpacity
+        style={styles.signUpButton}
+        onPress={() => router.push("/(auth)/sign-in")}
+      >
+        <Text style={styles.signUpText}>Sign In</Text>
+      </TouchableOpacity>
+
       {/* Message */}
       <Text style={styles.message}>
         Kindly Click <Text style={styles.highlight}>"Form"</Text> and get the
@@ -13,8 +21,16 @@ const FormPromptScreen: React.FC = () => {
       </Text>
 
       {/* Form Button */}
-      <TouchableOpacity style={styles.button} onPress={() => router.push("/Form")}>
-        <Ionicons name="document-text-outline" size={24} color="#000" style={styles.icon} />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push("/Form")}
+      >
+        <Ionicons
+          name="document-text-outline"
+          size={24}
+          color="#000"
+          style={styles.icon}
+        />
         <Text style={styles.buttonText}>Form</Text>
       </TouchableOpacity>
     </View>
@@ -28,6 +44,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F8F7FA",
     padding: 20,
+  },
+  signUpButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    backgroundColor: "#0000FF",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+  },
+  signUpText: {
+    color: "#FFF",
+    fontSize: 14,
+    fontWeight: "600",
   },
   message: {
     fontSize: 16,
