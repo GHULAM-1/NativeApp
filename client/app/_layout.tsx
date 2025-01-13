@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, AppState,AppStateStatus  } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  AppState,
+  AppStateStatus,
+} from "react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { tokenCache } from "@/cache";
 import { Image } from "expo-image";
-import { ClerkProvider, ClerkLoaded, useAuth, useSession } from "@clerk/clerk-expo";
+import {
+  ClerkProvider,
+  ClerkLoaded,
+  useAuth,
+  useSession,
+} from "@clerk/clerk-expo";
 import { useUserStore } from "@/store/useUserStore";
 import uuid from "react-native-uuid";
 import { createUserInFirestore } from "@/lib/api/api";
+import Toast from "react-native-toast-message";
+import { useSegments } from "expo-router"; // Import `useSegments`
+
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
 
@@ -19,8 +34,8 @@ if (!publishableKey) {
   );
 }
 
-export default function RootLayout() {
 
+export default function RootLayout() {
   const splash = require("../assets/careerquest logos and icons/front logo.png");
 
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -39,7 +54,7 @@ export default function RootLayout() {
   if (isSplashVisible) {
     return (
       <View style={styles.splashContainer}>
-          <Image source={splash} style={styles.image} contentFit="contain" />
+        <Image source={splash} style={styles.image} contentFit="contain" />
       </View>
     );
   }
@@ -49,12 +64,13 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-      <ClerkLoaded>
-        <MainContent />
-        <StatusBar style="auto" />
-      </ClerkLoaded>
-    </ClerkProvider>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+        <ClerkLoaded>
+          <MainContent />
+        <Toast/>
+          <StatusBar style="auto" />
+        </ClerkLoaded>
+      </ClerkProvider>
   );
 }
 
@@ -66,39 +82,52 @@ const MainContent = () => {
 
   // Ensure session is checked when the app becomes active (when close and reopen app)
   useEffect(() => {
-    const handleAppStateChange = async (nextAppState:AppStateStatus) => {
+    const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+      const segments = useSegments(); // Get the current route segments
+  
+      // Exclude session check for specific routes
+      if (segments.join("/") === "(screens)/QuestConnectScreen") {
+        console.log("Skipping session check for QuestConnectScreen.");
+        return;
+      }
+  
       if (nextAppState === "active") {
         console.log("App has become active. Checking session...");
         const token = await getToken(); // Refresh the session token
         if (token) {
           console.log("Token refreshed. Session is valid.");
-          router.replace("/(screens)/With-an-account");
+          // router.replace("/(screens)/With-an-account");
         } else {
           console.log("No session found. Redirecting to sign-in.");
           router.replace("/(auth)/sign-in");
         }
       }
     };
-
-    const subscription = AppState.addEventListener("change", handleAppStateChange);
-
+  
+    const subscription = AppState.addEventListener(
+      "change",
+      handleAppStateChange
+    );
+  
     return () => subscription.remove();
-  }, [getToken, router]);
+  }, [getToken, router, useSegments]);
+  
 
   // Initial session check on app load
   useEffect(() => {
     if (isLoaded) {
       if (session) {
         console.log("Session found. Redirecting to With-an-account...");
-  
+
         // Fetch user data from Clerk session
         const userId = session.user?.id; // Use Clerk user ID
-        const email = session.user?.primaryEmailAddress?.emailAddress || "Unknown Email"; // Access emailAddress
+        const email =
+          session.user?.primaryEmailAddress?.emailAddress || "Unknown Email"; // Access emailAddress
         const name = session.user?.firstName || "Unknown User";
-  
+
         // Update Zustand state
         setUser(name, email, userId);
-  
+
         // Send to Firebase
         const userData = { id: userId, name, email_address: email };
         createUserInFirestore(userData)
@@ -109,8 +138,10 @@ const MainContent = () => {
               console.log("User created successfully in Firebase.");
             }
           })
-          .catch((err) => console.error("Error creating user in Firebase:", err));
-  
+          .catch((err) =>
+            console.error("Error creating user in Firebase:", err)
+          );
+
         router.replace("/(screens)/With-an-account");
       } else {
         console.log("No session found. Redirecting to sign-in...");
@@ -118,9 +149,6 @@ const MainContent = () => {
       }
     }
   }, [isLoaded, session]);
-  
-  
-  
 
   const handleLogout = async () => {
     await signOut();

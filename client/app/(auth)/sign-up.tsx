@@ -9,6 +9,7 @@ import * as Linking from "expo-linking";
 import { createUserInFirestore } from "@/lib/api/api";
 import uuid from "react-native-uuid";
 import { useUserStore } from "@/store/useUserStore";
+import Toast from "react-native-toast-message";
 
 export const useWarmUpBrowser = () => {
   React.useEffect(() => {
@@ -39,7 +40,13 @@ export default function SignUpScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const setUser = useUserStore((state) => state.setUser); // Access setUser from Zustand
-
+const showToast = (type:any, message:any) => {
+    Toast.show({
+      type,
+      text1: message,
+      position: "bottom",
+    });
+  };
   const extractNameFromEmail = (email: string): string => {
     if (!email || !email.includes("@")) {
       return "Unknown User"; // Fallback if the email is invalid
@@ -94,14 +101,14 @@ export default function SignUpScreen() {
               console.log("User created successfully in Firebase.");
             }
           })
-          .catch((err) => console.error("Error creating user in Firebase:", err));
+          .catch((err) => console.log());
 
         router.replace("/(screens)/With-an-account");
       } else {
-        console.error("OAuth sign-up not complete");
+        showToast("error", "Google Sign in not completed.");
       }
     } catch (err) {
-      console.error("OAuth Sign-Up Error:", err);
+      showToast("error", "OAuth Sign-In Error");
     }
   }, [startOAuthFlow, setActive, session, setUser, router]);
 
@@ -140,10 +147,9 @@ export default function SignUpScreen() {
             console.log("User created successfully in Firebase.");
           }
         })
-        .catch((err) => console.error("Error creating user in Firebase:", err));
+        .catch((err) => console.log());
     } catch (err) {
-      console.error("Sign-Up Error:", JSON.stringify(err, null, 2));
-      Alert.alert("Sign-Up Failed", "Please try again later.");
+      Alert.alert("Sign-Up Failed", "This Email is already taken. Please try again later.");
     }
   };
   

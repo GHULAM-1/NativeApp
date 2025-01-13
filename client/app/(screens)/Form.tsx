@@ -48,9 +48,8 @@ const QuizScreen: React.FC = () => {
   };
 
   const handleOptionSelect = (index: number) => {
-    // Check if the last option is selected
-    const isLastOption = index === formQuestions[currentQuestionIndex].options.length - 1;
-    setLastOptionSelected(isLastOption);
+    setLastOptionSelected(true); // Mark that an option has been selected
+    console.log("Option selected:", formQuestions[currentQuestionIndex].options[index], setLastOptionSelected);
 
     // Move to the next question automatically if not the last question
     if (currentQuestionIndex < formQuestions.length - 1) {

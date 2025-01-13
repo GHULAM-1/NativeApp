@@ -16,6 +16,7 @@ import {
   useAuth,
   useSession,
 } from "@clerk/clerk-expo";
+import Toast from "react-native-toast-message";
 
 // Warm-up the browser for better user experience during OAuth flow
 export const useWarmUpBrowser = () => {
@@ -40,6 +41,7 @@ export default function SignInScreen() {
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = useState(false);
+  
 
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
   const extractNameFromEmail = (email: string): string => {
@@ -62,6 +64,15 @@ export default function SignInScreen() {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
+
+  const showToast = (type:any, message:any) => {
+    Toast.show({
+      type,
+      text1: message,
+      position: "bottom",
+    });
+  };
+
   const handleGoogle = useCallback(async () => {
     if (!setActive) {
       console.error("setActive is undefined");
@@ -102,10 +113,11 @@ export default function SignInScreen() {
   
         router.replace("/(screens)/With-an-account");
       } else {
-        console.error("OAuth sign-in not complete");
+        showToast("error", "Google Sign in not completed.");
       }
     } catch (err) {
-      console.error("OAuth Sign-In Error:", err);
+      showToast("error", "OAuth Sign-In Error");
+      // console.error(":", err);
     }
   }, [startOAuthFlow, setActive, session, router]);
   
@@ -127,10 +139,10 @@ export default function SignInScreen() {
         console.log("sign in using email");
         router.replace("/(screens)/With-an-account");
       } else {
-        console.error("Sign-in not complete:", signInAttempt);
+        showToast("error","Sign-in not complete");
       }
     } catch (err) {
-      console.error("Email Sign-In Error:", err);
+      showToast("error","Email Sign-In Error");
     }
   }, [isLoaded, emailAddress, password, signIn, setActive, router]);
 
@@ -167,7 +179,7 @@ export default function SignInScreen() {
             value={password}
             onChangeText={setPassword}
             style={styles.input}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             outlineColor="#D9D9D9"
             activeOutlineColor="#0000FF"
             right={
@@ -178,14 +190,14 @@ export default function SignInScreen() {
             }
           />
 
-          {/* Forgot Password */}
+          {/* Forgot Password
           <Button
             mode="text"
             onPress={() => console.log("Navigate to reset password")}
             style={styles.link}
           >
             Forgot Password?
-          </Button>
+          </Button> */}
 
           {/* Sign-In Button */}
           <Button

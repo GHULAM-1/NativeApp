@@ -12,15 +12,57 @@ import { router } from "expo-router";
 import { Button, Modal, TextInput } from "react-native-paper";
 import { Image } from "expo-image";
 import { useUserStore } from "@/store/useUserStore";
-import { fetchPosts, likePost, addPost } from "@/lib/api/api";
-
+import * as ImagePicker from "expo-image-picker"; 
+import {
+  fetchPosts,
+  likePost,
+  addPost,
+  editPost,
+  deletePost,
+  uploadImageToCloudinary,
+} from "@/lib/api/api";
+import { launchImageLibrary } from "react-native-image-picker";
+import { notifications } from "@/lib/data'/notification";
 const QuestConnectScreen: React.FC = () => {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [newPost, setNewPost] = useState("");
   const [showNotifications, setShowNotifications] = useState(false);
   const [isSplashVisible, setIsSplashVisible] = useState(true);
+  const [editPostId, setEditPostId] = useState<string | null>(null);
   const { name, email, id: userId } = useUserStore();
   const [posts, setPosts] = useState<any[]>([]);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [newImageUri, setNewImageUri] = useState<string | null>(null);
+
+  const handleOptionButtonClick = (postId: string) => {
+    setSelectedPostId((prevPostId) => (prevPostId === postId ? null : postId));
+  };
+
+  const handleImagePick = async () => {
+    // Request permissions
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
+    
+ 
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setNewImageUri(result.assets[0].uri); 
+    }
+  };
+
+  const closeOptions = () => {
+    setSelectedPostId(null);
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,27 +71,45 @@ const QuestConnectScreen: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
   const formatDate = (dateString: string): string => {
-    if (!dateString) return "Invalid Date"; // Handle invalid or missing dates
+    if (!dateString) return "Invalid Date";
+  
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "Invalid Date"; // Handle invalid dates
-
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}-${month}-${year}`;
+    if (isNaN(date.getTime())) return "Invalid Date";
+  
+    return new Intl.DateTimeFormat("en-US", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(date);
   };
+  
 
   const handleAddPost = async () => {
     if (!newPost.trim()) {
       alert("Post content cannot be empty.");
       return;
     }
+    if (!email) {
+      alert(
+        "You cannot add a post without an email address. Please log in or provide an email."
+      );
+      return;
+    }
+
+    let imageUrl = null;
+    if (newImageUri) {
+      try {
+        imageUrl = await uploadImageToCloudinary(newImageUri);
+        console.log("uploded",imageUrl)
+      } catch (error) {
+        alert("Failed to upload image. Please try again.");
+        return;
+      }
+    }
 
     const postId = `${userId}-${Date.now()}`;
-    const postDate = new Date().toISOString(); // Ensure valid ISO date string
+    const postDate = new Date().toISOString();
 
     const newPostData = {
       id: postId,
@@ -58,30 +118,24 @@ const QuestConnectScreen: React.FC = () => {
       text: newPost,
       likes: 0,
       likedBy: [],
+      author: email,
+      imageUrl: imageUrl || "",
     };
 
-    // Optimistically update the posts
     setPosts((prevPosts) => [
       {
         ...newPostData,
-        date: formatDate(postDate), // Format the date for immediate display
+        date: formatDate(postDate),
       },
       ...prevPosts,
     ]);
 
-    // Clear the input and close the dialog
     setNewPost("");
     setIsDialogVisible(false);
-
     try {
-      // Make the API call to save the post
       await addPost(newPostData);
     } catch (error) {
-      console.error("Error adding post:", error);
-
-      // Optionally, show an error message or rollback the optimistic update
-      alert("Failed to add the post. Please try again.");
-      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+      alert("Failed to add post. Please try again.");
     }
   };
 
@@ -99,6 +153,7 @@ const QuestConnectScreen: React.FC = () => {
       console.error("Error toggling like:", error);
     }
   };
+
   useEffect(() => {
     const loadPosts = async () => {
       try {
@@ -111,6 +166,57 @@ const QuestConnectScreen: React.FC = () => {
 
     loadPosts();
   }, []);
+
+  const handleEditPost = async () => {
+    if (!editPostId || !email) {
+      alert("Error: Unable to edit this post.");
+      return;
+    }
+
+    let imageUrl = null;
+    if (newImageUri) {
+      try {
+        imageUrl = await uploadImageToCloudinary(newImageUri);
+      } catch (error) {
+        alert("Failed to upload image. Please try again.");
+        return;
+      }
+    }
+
+    try {
+      if(imageUrl){
+        await editPost(editPostId, email, newPost, imageUrl);
+      }
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === editPostId
+            ? { ...post, text: newPost, imageUrl: imageUrl || post.imageUrl }
+            : post
+        )
+      );
+      setNewPost("");
+      setEditPostId(null);
+      setIsDialogVisible(false);
+    } catch (error) {
+      console.error("Error editing post:", error);
+      alert("Failed to edit the post. Please try again.");
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!email) {
+      alert("Error: Unable to delete this post.");
+      return;
+    }
+
+    try {
+      await deletePost(postId, email);
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert("Failed to delete the post. Please try again.");
+    }
+  };
 
   const logo = require("../../assets/careerquest logos and icons/front logo.png");
   const splash = require("../../assets/careerquest logos and icons/quest connect.png");
@@ -134,7 +240,9 @@ const QuestConnectScreen: React.FC = () => {
           >
             <Ionicons name="chevron-back-outline" size={28} color="#FFFFFF" />
           </TouchableOpacity>
-          <Image source={logo} style={styles.image} contentFit="cover" />
+          <TouchableOpacity onPress={() => router.navigate("/(screens)/With-an-account")}>
+          <Image source={logo}  style={styles.image} contentFit="cover" />
+          </TouchableOpacity>
         </View>
         <View style={styles.headerIcons}>
           <TouchableOpacity
@@ -170,16 +278,54 @@ const QuestConnectScreen: React.FC = () => {
                 <Text style={styles.personName}>{item.username}</Text>
                 <Text style={styles.date}>{formatDate(item.date)}</Text>
               </View>
+
+              {item.author === email && (
+                <TouchableOpacity
+                  style={styles.optionButton}
+                  onPress={() => handleOptionButtonClick(item.id)}
+                >
+                  <Ionicons name="ellipsis-horizontal" size={24} color="#000" />
+                </TouchableOpacity>
+              )}
             </View>
+
+            {selectedPostId === item.id && (
+              <View style={styles.optionsMenu}>
+                <Button
+                  mode="text"
+                  onPress={() => {
+                    setEditPostId(item.id);
+                    setNewPost(item.text);
+                    setNewImageUri(item.imageUrl || null);
+                    setIsDialogVisible(true);
+                    closeOptions();
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  mode="text"
+                  onPress={() => {
+                    handleDeletePost(item.id);
+                    closeOptions();
+                  }}
+                  textColor="red"
+                >
+                  Delete
+                </Button>
+              </View>
+            )}
+
             <View style={styles.postContentContainer}>
-              <ScrollView
-                style={styles.scrollableText}
-                nestedScrollEnabled={true}
-                showsVerticalScrollIndicator={true}
-              >
-                <Text style={styles.postContent}>{item.text}</Text>
-              </ScrollView>
+              {item.imageUrl && (
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.postImage}
+                />
+              )}
+              <Text style={styles.postContent}>{item.text}</Text>
             </View>
+
             <View style={styles.postFooter}>
               <TouchableOpacity onPress={() => handleLike(item.id)}>
                 <Ionicons
@@ -199,11 +345,17 @@ const QuestConnectScreen: React.FC = () => {
       />
 
       <Modal
-        visible={isDialogVisible}
-        onDismiss={() => setIsDialogVisible(false)}
+        visible={isDialogVisible || !!editPostId}
+        onDismiss={() => {
+          setIsDialogVisible(false);
+          setEditPostId(null);
+          setNewPost("");
+        }}
         contentContainerStyle={styles.dialog}
       >
-        <Text style={styles.dialogTitle}>Add New Post</Text>
+        <Text style={styles.dialogTitle}>
+          {editPostId ? "Edit Post" : "Add New Post"}
+        </Text>
         <TextInput
           style={styles.textInput}
           placeholder="Write your post here..."
@@ -211,20 +363,48 @@ const QuestConnectScreen: React.FC = () => {
           onChangeText={setNewPost}
           multiline
         />
+        {newImageUri && (
+          <Image source={{ uri: newImageUri }} style={styles.imagePreview} />
+        )}
+        <Button onPress={handleImagePick}>Upload Image</Button>
         <View style={styles.dialogActions}>
           <Button
             mode="outlined"
-            onPress={() => setIsDialogVisible(false)}
-            style={styles.cancelButton}
+            onPress={() => {
+              setIsDialogVisible(false);
+              setEditPostId(null);
+              setNewPost("");
+            }}
           >
             Cancel
           </Button>
-          <Button mode="contained" onPress={handleAddPost}>
-            Add
+          <Button
+            mode="contained"
+            onPress={editPostId ? handleEditPost : handleAddPost}
+          >
+            {editPostId ? "Save Changes" : "Add"}
           </Button>
         </View>
       </Modal>
+      {showNotifications && (
+        <View style={styles.notificationDropdown}>
+          <FlatList
+            data={notifications}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={styles.notificationItem}>
+                <Text style={styles.notificationTitle}>{item.title}</Text>
+                <Text style={styles.notificationMessage}>{item.message}</Text>
+                <Text style={styles.notificationDate}>
+                  {formatDate(item.date)}
+                </Text>
+              </View>
+            )}
+          />
+        </View>
+      )}
     </View>
+    
   );
 };
 
@@ -236,6 +416,77 @@ const styles = StyleSheet.create({
   likes: {
     fontSize: 14,
     color: "#007AFF",
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  postContent: {
+    fontSize: 14,
+    color: "#2A2A2A",
+  },
+  postCard: {
+    backgroundColor: "#FFF",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  postHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  postInfo: {
+    marginLeft: 10,
+  },
+  personName: {
+    fontWeight: "bold",
+  },
+  date: {
+    color: "#777",
+    fontSize: 12,
+  },
+  optionButton: {
+    marginLeft: "auto",
+  },
+  optionsMenu: {
+    flexDirection: "column",
+    backgroundColor: "#FFF",
+    padding: 10,
+    marginTop: 5,
+    borderRadius: 5,
+  },
+  postContentContainer: {
+    marginTop: 10,
+  },
+  postImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  dialog: {
+    padding: 20,
+    backgroundColor:"white",
+  },
+  dialogTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#CCC",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+    // height: 100,
+    textAlignVertical: "top",
+  },
+  dialogActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   postFooter: {
     flexDirection: "row",
@@ -302,16 +553,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     position: "relative",
   },
-  textInput: {
-    borderWidth: 1,
-    borderColor: "#D9D9D9",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
-    height: 100,
-    textAlignVertical: "top",
-    fontSize: 14,
-  },
+
   icon: {
     marginHorizontal: 5,
   },
@@ -353,61 +595,11 @@ const styles = StyleSheet.create({
   postsContainer: {
     padding: 15,
   },
-  postCard: {
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 10,
-    maxHeight: 200,
-    elevation: 2,
-  },
-  postHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  postInfo: {
-    marginLeft: 10,
-  },
-  personName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#2A2A2A",
-  },
-  date: {
-    fontSize: 12,
-    color: "#999",
-  },
-  postContent: {
-    fontSize: 14,
-    color: "#2A2A2A",
-  },
-  postContentContainer: {
-    maxHeight: 100, // Set the max height for the container
-    borderColor: "#E0E0E0",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 5,
-    backgroundColor: "#F9F9F9",
-  },
+ 
   scrollableText: {
     flexGrow: 0,
   },
 
-  dialog: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-  },
-  dialogTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  dialogActions: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
 });
-
 export default QuestConnectScreen;
+
