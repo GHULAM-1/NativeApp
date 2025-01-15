@@ -124,6 +124,7 @@ const QuestConnectScreen: React.FC = () => {
     };
 
     setNewPost("");
+    setNewImageUri(null);
     setIsDialogVisible(false);
     try {
       await addPost(newPostData);
@@ -147,17 +148,19 @@ const QuestConnectScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
     const loadPosts = async () => {
       try {
         const fetchedPosts = await fetchPosts();
         setPosts(fetchedPosts.reverse());
+
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
 
+  useEffect(() => {
     loadPosts();
+
   }, [posts]);
 
   const handleEditPost = async () => {
