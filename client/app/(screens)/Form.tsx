@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40,
+    top: 50,
     left: 20,
     backgroundColor: "black",
     borderRadius: 25,
@@ -174,11 +174,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     elevation: 2,
     width: "80%",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   optionText: {
     fontSize: 16,
     color: "#000",
+    textAlign:"left",
     fontWeight: "600",
   },
   paginationContainer: {

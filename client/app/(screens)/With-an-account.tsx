@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { useUserStore } from "@/store/useUserStore";
+import Header from "@/components/Header";
 
 const HomeOptions = () => {
   const form = require("../../assets/careerquest logos and icons/icons/form.png");
@@ -11,67 +12,75 @@ const HomeOptions = () => {
   const chatbot = require("../../assets/careerquest logos and icons/icons/AI Chatbot.png");
   const aolevel = require("../../assets/careerquest logos and icons/icons/article.png");
   const { name, email, id } = useUserStore();
-  
+
   console.log(name, email, id);
- 
 
   return (
-    <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.push("/HomeScreen")}
-      >
-        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
+    <>
+      <View style={styles.header}>
+        <Header title="Home" />
+      </View>
+      <View style={styles.container}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.push("/HomeScreen")}
+        >
+          <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
 
-      {/* Form Button */}
-      <TouchableOpacity
-        style={styles.touchableButton}
-        onPress={() => router.push("/Form")}
-      >
-        <View style={styles.buttonContent}>
-          <Image source={form} style={styles.image} contentFit="contain" />
+        {/* Form Button */}
+        <TouchableOpacity
+          style={styles.touchableButton}
+          onPress={() => router.push("/Form")}
+        >
+          <View style={styles.buttonContent}>
+            <Image source={form} style={styles.image} contentFit="contain" />
 
-          <Text style={styles.text}>Form</Text>
-        </View>
-      </TouchableOpacity>
+            <Text style={styles.text}>Form</Text>
+          </View>
+        </TouchableOpacity>
 
-      {/* Quest Connect Button */}
-      <TouchableOpacity
-        style={styles.touchableButton}
-        onPress={() => router.push("/Quest-Connect")}
-      >
-        <View style={styles.buttonContent}>
-          <Image source={connect} style={styles.image} contentFit="contain" />
+        {/* Quest Connect Button */}
+        <TouchableOpacity
+          style={styles.touchableButton}
+          onPress={() => router.push("/Quest-Connect")}
+        >
+          <View style={styles.buttonContent}>
+            <Image source={connect} style={styles.image} contentFit="contain" />
 
-          <Text style={styles.text}>Quest Connect</Text>
-        </View>
-      </TouchableOpacity>
+            <Text style={styles.text}>Quest Connect</Text>
+          </View>
+        </TouchableOpacity>
 
-      {/* AI Chatbot Button */}
-      <TouchableOpacity
-        style={styles.touchableButton}
-        onPress={() => router.push("/Form")}
-      >
-        <View style={styles.buttonContent}>
-          <Image source={chatbot} style={styles.image} contentFit="contain" />
+        {/* AI Chatbot Button */}
+        <TouchableOpacity
+          style={styles.touchableButton}
+          onPress={() => router.push("/Form")}
+        >
+          <View style={styles.buttonContent}>
+            <Image source={chatbot} style={styles.image} contentFit="contain" />
 
-          <Text style={styles.text}>AI Chatbot</Text>
-        </View>
-      </TouchableOpacity>
+            <Text style={styles.text}>AI Chatbot</Text>
+          </View>
+        </TouchableOpacity>
 
-      {/* A/O Level Guide Button */}
-      <TouchableOpacity
-        style={styles.touchableButton}
-        onPress={() => router.push("/Equivalence-Info-Screen")}
-      >
-        <View style={styles.buttonContent}>
-          <Image source={aolevel} style={styles.image2} contentFit="contain" />
-          <Text style={styles.text}>A / O Level Student Guide</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+        {/* A/O Level Guide Button */}
+        <TouchableOpacity
+          style={styles.touchableButton}
+          onPress={() => router.push("/Equivalence-Info-Screen")}
+        >
+          <View style={styles.buttonContent}>
+            <Image
+              source={aolevel}
+              style={styles.image2}
+              contentFit="contain"
+            />
+            <Text style={styles.text}>A / O Level Student Guide</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 };
 
@@ -83,6 +92,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
+  header: {
+    marginTop:26,
+    padding:0,
+  },
   image: {
     width: 70,
     height: 30,
@@ -93,7 +106,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40,
+    top: 50,
     left: 20,
     backgroundColor: "black",
     borderRadius: 25,

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, BackHandler } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image } from "expo-image";
@@ -7,11 +7,13 @@ import { Image } from "expo-image";
 const HomeScreen: React.FC = () => {
   const signin = require("../../assets/careerquest logos and icons/icons/sign in.png");
   const notSignin = require("../../assets/careerquest logos and icons/icons/without sign in.png");
-
+  const handleBackPress = () => {
+    BackHandler.exitApp(); // Exits the app
+  };
   return (
     <View style={styles.container}>
       {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
       </TouchableOpacity>
 
@@ -57,7 +59,7 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40,
+    top: 50,
     left: 20,
     backgroundColor: "black",
     borderRadius: 25,

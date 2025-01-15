@@ -23,6 +23,7 @@ import {
 } from "@/lib/api/api";
 import { launchImageLibrary } from "react-native-image-picker";
 import { notifications } from "@/lib/data'/notification";
+import Header from "@/components/Header";
 const QuestConnectScreen: React.FC = () => {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [newPost, setNewPost] = useState("");
@@ -122,14 +123,6 @@ const QuestConnectScreen: React.FC = () => {
       imageUrl: imageUrl || "",
     };
 
-    setPosts((prevPosts) => [
-      {
-        ...newPostData,
-        date: formatDate(postDate),
-      },
-      ...prevPosts,
-    ]);
-
     setNewPost("");
     setIsDialogVisible(false);
     try {
@@ -158,14 +151,14 @@ const QuestConnectScreen: React.FC = () => {
     const loadPosts = async () => {
       try {
         const fetchedPosts = await fetchPosts();
-        setPosts(fetchedPosts);
+        setPosts(fetchedPosts.reverse());
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
 
     loadPosts();
-  }, []);
+  }, [posts]);
 
   const handleEditPost = async () => {
     if (!editPostId || !email) {
@@ -231,8 +224,13 @@ const QuestConnectScreen: React.FC = () => {
   }
 
   return (
+    <>
+    <View style={styles.topHeader}>
+      <Header title="Home" />
+    </View> 
     <View style={styles.container}>
       <View style={styles.header}>
+
         <View style={styles.headerLeft}>
           <TouchableOpacity
             style={styles.backButton}
@@ -241,9 +239,10 @@ const QuestConnectScreen: React.FC = () => {
             <Ionicons name="chevron-back-outline" size={28} color="#FFFFFF" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.navigate("/(screens)/With-an-account")}>
-          <Image source={logo}  style={styles.image} contentFit="cover" />
+          {/* <Image source={logo}  style={styles.image} contentFit="cover" /> */}
           </TouchableOpacity>
         </View>
+
         <View style={styles.headerIcons}>
           <TouchableOpacity
             onPress={() => setShowNotifications(!showNotifications)}
@@ -263,8 +262,9 @@ const QuestConnectScreen: React.FC = () => {
               style={styles.icon}
             />
           </TouchableOpacity>
-          <Ionicons name="person" size={24} color="#000" />
+          {/* <Ionicons name="person" size={24} color="#000" /> */}
         </View>
+
       </View>
 
       <FlatList
@@ -404,6 +404,7 @@ const QuestConnectScreen: React.FC = () => {
         </View>
       )}
     </View>
+    </>
     
   );
 };
@@ -412,6 +413,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F7FA",
+  },
+  topHeader: {
+    marginTop:26,
+    padding:0,
   },
   likes: {
     fontSize: 14,
@@ -510,7 +515,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#000",
     position: "absolute",
-    top: 530,
+    top: 560,
     fontWeight: "bold",
   },
   image: {

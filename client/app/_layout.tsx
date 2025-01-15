@@ -24,6 +24,8 @@ import uuid from "react-native-uuid";
 import { createUserInFirestore } from "@/lib/api/api";
 import Toast from "react-native-toast-message";
 import { useSegments } from "expo-router"; // Import `useSegments`
+import { useColorScheme } from "react-native"; // Detect system theme
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY || "";
@@ -39,6 +41,7 @@ export default function RootLayout() {
   const splash = require("../assets/careerquest logos and icons/front logo.png");
 
   const [isSplashVisible, setIsSplashVisible] = useState(true);
+  const colorScheme = useColorScheme(); // Detect light or dark mode
 
   const [fontsLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -64,6 +67,14 @@ export default function RootLayout() {
   }
 
   return (
+    <SafeAreaProvider>
+ <SafeAreaView
+        style={[
+          styles.safeArea,
+          colorScheme === "dark" ? styles.darkMode : styles.lightMode,
+        ]}
+      >
+
       <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
         <ClerkLoaded>
           <MainContent />
@@ -71,6 +82,9 @@ export default function RootLayout() {
           <StatusBar style="auto" />
         </ClerkLoaded>
       </ClerkProvider>
+      </SafeAreaView>
+    </SafeAreaProvider>
+
   );
 }
 
@@ -157,9 +171,6 @@ const MainContent = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(home)/index" />
         <Stack.Screen name="(auth)/sign-in" />
@@ -199,5 +210,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  safeArea: {
+    flex: 1,
+  },
+  lightMode: {
+    backgroundColor: "#FFF",
+  },
+  darkMode: {
+    backgroundColor: "#000",
   },
 });

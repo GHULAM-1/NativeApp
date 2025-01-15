@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   },
   customBackButton: {
     position: "absolute",
-    top: 40,
+    top: 50,
     left: 20,
     zIndex: 1,
     backgroundColor: "#000000", // Black background
