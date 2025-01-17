@@ -153,7 +153,7 @@ const MainContent = () => {
             }
           })
           .catch((err) =>
-            console.error("Error creating user in Firebase:", err)
+            console.log()
           );
 
         router.replace("/(screens)/With-an-account");

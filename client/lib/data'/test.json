@@ -1,0 +1,458 @@
+{
+  "professions": {
+    "Analytical/Logical": {
+      "Data Analyst": {
+        "description": "Analyze data to help businesses make informed decisions.",
+        "universities": [
+          {
+            "university": "National University of Sciences and Technology (NUST)",
+            "location": "Islamabad",
+            "number": "+92-51-9085-1347",
+            "website": "https://www.nust.edu.pk"
+          },
+          {
+            "university": "COMSATS University Islamabad",
+            "location": "Islamabad",
+            "number": "+92-51-9247000",
+            "website": "https://www.comsats.edu.pk"
+          },
+          {
+            "university": "University of Lahore (UOL)",
+            "location": "Lahore",
+            "number": "+92-42-111-865-865",
+            "website": "https://www.uol.edu.pk"
+          },
+          {
+            "university": "University of Central Punjab (UCP)",
+            "location": "Lahore",
+            "number": "+92-42-35880007",
+            "website": "https://www.ucp.edu.pk"
+          },
+          {
+            "university": "Institute of Business Administration (IBA)",
+            "location": "Karachi",
+            "number": "+92-21-38104701",
+            "website": "https://www.iba.edu.pk"
+          },
+          {
+            "university": "Iqra University",
+            "location": "Karachi",
+            "number": "+92-21-111-264-264",
+            "website": "https://www.iqra.edu.pk"
+          }
+        ]
+      },
+      "Software Developer": {
+        "description": "Design and develop software applications.",
+        "universities": [
+          {
+            "university": "FAST-National University of Computer and Emerging Sciences",
+            "location": "Islamabad",
+            "number": "+92-51-111-128-128",
+            "website": "https://www.nu.edu.pk"
+          },
+          {
+            "university": "University of Engineering and Technology (UET), Lahore",
+            "location": "Lahore",
+            "number": "+92-42-99029216",
+            "website": "https://www.uet.edu.pk"
+          },
+          {
+            "university": "Riphah International University",
+            "location": "Islamabad",
+            "number": "+92-51-111-510-510",
+            "website": "https://www.riphah.edu.pk"
+          },
+          {
+            "university": "University of South Asia (USA)",
+            "location": "Lahore",
+            "number": "+92-42-111-111-872",
+            "website": "https://www.usa.edu.pk"
+          },
+          {
+            "university": "Habib University",
+            "location": "Karachi",
+            "number": "+92-21-111-042-242",
+            "website": "https://www.habib.edu.pk"
+          }
+        ]
+      },
+      "Engineer (Mechanical, Electrical, Civil)": {
+        "description": "Solve technical problems and design solutions.",
+        "universities": [
+          {
+            "university": "NED University of Engineering and Technology",
+            "location": "Karachi",
+            "number": "+92-21-99261261",
+            "website": "https://www.neduet.edu.pk"
+          },
+          {
+            "university": "Ghulam Ishaq Khan Institute of Engineering Sciences and Technology (GIKI)",
+            "location": "Topi, Khyber Pakhtunkhwa",
+            "number": "+92-938-271858",
+            "website": "https://www.giki.edu.pk"
+          },
+          {
+            "university": "Mehran University of Engineering and Technology",
+            "location": "Jamshoro",
+            "number": "+92-22-2772250",
+            "website": "https://www.muet.edu.pk"
+          },
+          {
+            "university": "University of Engineering and Technology (UET), Peshawar",
+            "location": "Peshawar",
+            "number": "+92-91-9216796",
+            "website": "https://www.uetpeshawar.edu.pk"
+          },
+          {
+            "university": "University of Engineering and Technology (UET), Taxila",
+            "location": "Taxila",
+            "number": "+92-51-9047400",
+            "website": "https://www.uettaxila.edu.pk"
+          }
+        ]
+      },
+      "Statistician": {
+        "description": "Use statistical methods to collect and analyze data.",
+        "universities": [
+          {
+            "university": "Quaid-i-Azam University",
+            "location": "Islamabad",
+            "number": "+92-51-9064000",
+            "website": "https://www.qau.edu.pk"
+          },
+          {
+            "university": "University of the Punjab",
+            "location": "Lahore",
+            "number": "+92-42-99231105",
+            "website": "http://www.pu.edu.pk"
+          },
+          {
+            "university": "Government College University (GCU), Lahore",
+            "location": "Lahore",
+            "number": "+92-42-99213340",
+            "website": "https://www.gcu.edu.pk"
+          },
+          {
+            "university": "University of Karachi",
+            "location": "Karachi",
+            "number": "+92-21-99261100",
+            "website": "https://www.uok.edu.pk"
+          }
+        ]
+      },
+      "Financial Analyst": {
+        "description": "Evaluate financial data to guide investment decisions.",
+        "universities": [
+          {
+            "university": "Institute of Business Administration (IBA), Karachi",
+            "location": "Karachi",
+            "number": "+92-21-38104701",
+            "website": "https://www.iba.edu.pk"
+          },
+          {
+            "university": "Lahore University of Management Sciences (LUMS)",
+            "location": "Lahore",
+            "number": "+92-42-35608000",
+            "website": "https://www.lums.edu.pk"
+          },
+          {
+            "university": "Institute of Management Sciences (IMSciences)",
+            "location": "Peshawar",
+            "number": "+92-91-5861024",
+            "website": "https://www.imsciences.edu.pk"
+          },
+          {
+            "university": "University of Central Punjab (UCP)",
+            "location": "Lahore",
+            "number": "+92-42-35880007",
+            "website": "https://www.ucp.edu.pk"
+          }
+        ]
+      },
+      "Medical Researcher": {
+        "description": "Conduct research to improve health outcomes.",
+        "universities": [
+          {
+            "university": "Aga Khan University",
+            "location": "Karachi",
+            "number": "+92-21-34930051",
+            "website": "https://www.aku.edu"
+          },
+          {
+            "university": "Dow University of Health Sciences",
+            "location": "Karachi",
+            "number": "+92-21-99215754",
+            "website": "https://www.duhs.edu.pk"
+          },
+          {
+            "university": "King Edward Medical University",
+            "location": "Lahore",
+            "number": "+92-42-99211145",
+            "website": "https://www.kemu.edu.pk"
+          },
+          {
+            "university": "Allama Iqbal Medical College",
+            "location": "Lahore",
+            "number": "+92-42-99231400",
+            "website": "https://www.aimc.edu.pk"
+          }
+        ]
+      },
+      "IT Specialist": {
+        "description": "Manage and support an organization’s IT infrastructure.",
+        "universities": [
+          {
+            "university": "FAST-National University of Computer and Emerging Sciences",
+            "location": "Islamabad",
+            "number": "+92-51-111-128-128",
+            "website": "https://www.nu.edu.pk"
+          },
+          {
+            "university": "National University of Sciences and Technology (NUST)",
+            "location": "Islamabad",
+            "number": "+92-51-9085-1347",
+            "website": "https://www.nust.edu.pk"
+          },
+          {
+            "university": "COMSATS University Islamabad",
+            "location": "Islamabad",
+            "number": "+92-51-9247000",
+            "website": "https://www.comsats.edu.pk"
+          },
+          {
+            "university": "University of Central Punjab (UCP)",
+            "location": "Lahore",
+            "number": "+92-42-35880007",
+            "website": "https://www.ucp.edu.pk"
+          }
+        ]
+      },
+      "Research Scientist": {
+        "description": "Investigate scientific questions and conduct experiments.",
+        "universities": [
+          {
+            "university": "Quaid-i-Azam University",
+            "location": "Islamabad",
+            "number": "+92-51-9064000",
+            "website": "https://www.qau.edu.pk"
+          },
+          {
+            "university": "National Institute for Biotechnology and Genetic Engineering (NIBGE)",
+            "location": "Faisalabad",
+            "number": "+92-41-2651475",
+            "website": "https://www.nibge.org"
+          },
+          {
+            "university": "HEJ Research Institute of Chemistry",
+            "location": "Karachi",
+            "number": "+92-21-111-222-292",
+            "website": "https://www.iccs.edu"
+          },
+          {
+            "university": "International Center for Chemical and Biological Sciences",
+            "location": "Karachi",
+            "number": "+92-21-99261767",
+            "website": "https://www.iccs.edu"
+          }
+        ]
+      },
+      "Operations Manager": {
+        "description": "Oversee production and service operations for efficiency.",
+        "universities": [
+          {
+            "university": "Lahore University of Management Sciences (LUMS)",
+            "location": "Lahore",
+            "number": "+92-42-35608000",
+            "website": "https://www.lums.edu.pk"
+          },
+          {
+            "university": "Institute of Business Administration (IBA), Karachi",
+            "location": "Karachi",
+            "number": "+92-21-38104701",
+            "website": "https://www.iba.edu.pk"
+          },
+          {
+            "university": "University of Management and Technology (UMT)",
+            "location": "Lahore",
+            "number": "+92-42-35212801",
+            "website": "https://www.umt.edu.pk"
+          },
+          {
+            "university": "Institute of Management Sciences (IMSciences)",
+            "location": "Peshawar",
+            "number": "+92-91-5861024",
+            "website": "https://www.imsciences.edu.pk"
+          }
+        ]
+      }
+    }
+  },
+  "Creative/Artistic": {
+    "Graphic Designer": {
+      "description": "Create visual content for print and digital media.",
+      "universities": [
+        {
+          "university": "National College of Arts (NCA)",
+          "location": "Lahore",
+          "number": "+92-42-99210599",
+          "website": "http://www.nca.edu.pk"
+        },
+        {
+          "university": "Indus Valley School of Art and Architecture",
+          "location": "Karachi",
+          "number": "+92-21-111-111-487",
+          "website": "http://www.indusvalley.edu.pk"
+        },
+        {
+          "university": "Beaconhouse National University (BNU)",
+          "location": "Lahore",
+          "number": "+92-42-38100156",
+          "website": "https://www.bnu.edu.pk"
+        },
+        {
+          "university": "University of Management and Technology (UMT)",
+          "location": "Lahore",
+          "number": "+92-42-35212801",
+          "website": "https://www.umt.edu.pk"
+        }
+      ]
+    },
+    "Architect": {
+      "description": "Design buildings and structures, ensuring functionality and aesthetics.",
+      "universities": [
+        {
+          "university": "National College of Arts (NCA)",
+          "location": "Lahore",
+          "number": "+92-42-99210599",
+          "website": "http://www.nca.edu.pk"
+        },
+        {
+          "university": "Indus Valley School of Art and Architecture",
+          "location": "Karachi",
+          "number": "+92-21-111-111-487",
+          "website": "http://www.indusvalley.edu.pk"
+        },
+        {
+          "university": "Mehran University of Engineering and Technology",
+          "location": "Jamshoro",
+          "number": "+92-22-2772250",
+          "website": "https://www.muet.edu.pk"
+        },
+        {
+          "university": "Beaconhouse National University (BNU)",
+          "location": "Lahore",
+          "number": "+92-42-38100156",
+          "website": "https://www.bnu.edu.pk"
+        }
+      ]
+    },
+    "Interior Designer": {
+      "description": "Plan and design interior spaces for residential and commercial projects.",
+      "universities": [
+        {
+          "university": "National College of Arts (NCA)",
+          "location": "Lahore",
+          "number": "+92-42-99210599",
+          "website": "http://www.nca.edu.pk"
+        },
+        {
+          "university": "Indus Valley School of Art and Architecture",
+          "location": "Karachi",
+          "number": "+92-21-111-111-487",
+          "website": "http://www.indusvalley.edu.pk"
+        },
+        {
+          "university": "University of Karachi (Department of Visual Studies)",
+          "location": "Karachi",
+          "number": "+92-21-99261100",
+          "website": "https://www.uok.edu.pk"
+        }
+      ]
+    }
+  },
+  "Interpersonal/Social": {
+    "Psychologist": {
+      "description": "Study mental processes and behavior to help individuals.",
+      "universities": [
+        {
+          "university": "University of the Punjab (PU)",
+          "location": "Lahore",
+          "number": "+92-42-99231105",
+          "website": "http://www.pu.edu.pk"
+        },
+        {
+          "university": "Quaid-i-Azam University",
+          "location": "Islamabad",
+          "number": "+92-51-9064000",
+          "website": "https://www.qau.edu.pk"
+        },
+        {
+          "university": "Lahore College for Women University (LCWU)",
+          "location": "Lahore",
+          "number": "+92-42-99203801",
+          "website": "https://www.lcwu.edu.pk"
+        },
+        {
+          "university": "Government College University (GCU), Lahore",
+          "location": "Lahore",
+          "number": "+92-42-99213340",
+          "website": "https://www.gcu.edu.pk"
+        }
+      ]
+    },
+    "Teacher/Educator": {
+      "description": "Educate and inspire students in various subjects.",
+      "universities": [
+        {
+          "university": "University of Education",
+          "location": "Lahore",
+          "number": "+92-42-99262227",
+          "website": "https://www.ue.edu.pk"
+        },
+        {
+          "university": "Allama Iqbal Open University (AIOU)",
+          "location": "Islamabad",
+          "number": "+92-51-111-112-468",
+          "website": "https://www.aiou.edu.pk"
+        }
+      ]
+    }
+  },
+  "Independent/Practical": {
+    "Entrepreneur": {
+      "description": "Start and manage your own business.",
+      "universities": [
+        {
+          "university": "Institute of Business Administration (IBA), Karachi",
+          "location": "Karachi",
+          "number": "+92-21-38104701",
+          "website": "https://www.iba.edu.pk"
+        },
+        {
+          "university": "Lahore University of Management Sciences (LUMS)",
+          "location": "Lahore",
+          "number": "+92-42-35608000",
+          "website": "https://www.lums.edu.pk"
+        }
+      ]
+    },
+    "Freelance Consultant": {
+      "description": "Offer specialized advice and services independently.",
+      "universities": [
+        {
+          "university": "National University of Sciences and Technology (NUST)",
+          "location": "Islamabad",
+          "number": "+92-51-9085-1347",
+          "website": "https://www.nust.edu.pk"
+        },
+        {
+          "university": "Institute of Business Administration (IBA), Karachi",
+          "location": "Karachi",
+          "number": "+92-21-38104701",
+          "website": "https://www.iba.edu.pk"
+        }
+      ]
+    }
+  }
+}

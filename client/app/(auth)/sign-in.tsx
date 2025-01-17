@@ -109,7 +109,7 @@ export default function SignInScreen() {
               console.log("User created successfully in Firebase.");
             }
           })
-          .catch((err) => console.error("Error creating user in Firebase:", err));
+          .catch((err) => console.log());
   
         router.replace("/(screens)/With-an-account");
       } else {

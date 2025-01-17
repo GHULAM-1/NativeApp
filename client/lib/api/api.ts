@@ -114,7 +114,7 @@ export const fetchAllQuestions = async (): Promise<
   {
     question_id: string;
     text: string;
-    options: string[];
+    options: { label: string; text: string }[];
   }[]
 > => {
   console.log("Fetching all questions...");
@@ -136,6 +136,8 @@ export const fetchAllQuestions = async (): Promise<
     throw error;
   }
 };
+
+
 export const editPost = async (
   postId: string,
   email: string,
@@ -231,3 +233,24 @@ export const uploadImageToCloudinary = async (imageUri: string): Promise<string>
   }
 };
 
+export const sendMessageToChatbot = async (message: string) => {
+  try {
+    const response = await fetch("http://192.168.1.168:5000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.status} - ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.response; 
+  } catch (error) {
+    console.error("Error in API call:", error);
+    throw error; 
+  }
+};

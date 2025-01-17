@@ -13,15 +13,17 @@ const QuizScreen: React.FC = () => {
     {
       question_id: string;
       text: string;
-      options: string[];
+      options: { label: string; text: string }[];
     }[]
   >([]);
   const [lastOptionSelected, setLastOptionSelected] = useState(false);
+  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const loadQuestions = async () => {
       try {
         const fetchedQuestions = await fetchAllQuestions();
+        console.log("Fetched questions:", fetchedQuestions)
         setFormQuestions(fetchedQuestions); // Store questions in state
       } catch (error) {
         console.error("Error loading questions:", error);
@@ -48,14 +50,18 @@ const QuizScreen: React.FC = () => {
   };
 
   const handleOptionSelect = (index: number) => {
-    setLastOptionSelected(true); // Mark that an option has been selected
-    console.log("Option selected:", formQuestions[currentQuestionIndex].options[index], setLastOptionSelected);
-
-    // Move to the next question automatically if not the last question
+    const selectedOption = currentQuestion.options[index];
+    setSelectedAnswers((prev) => ({
+      ...prev,
+      [currentQuestion.question_id]: selectedOption.label, // Map question_id to the selected label
+    }));
+    setLastOptionSelected(true);
+  
     if (currentQuestionIndex < formQuestions.length - 1) {
-      handleNext();
+      handleNext(); // Move to the next question
     }
   };
+  
 
   const next = require("../../assets/careerquest logos and icons/icons/next.png");
   const back = require("../../assets/careerquest logos and icons/icons/previous.png");
@@ -94,7 +100,7 @@ const QuizScreen: React.FC = () => {
             style={styles.optionButton}
             onPress={() => handleOptionSelect(index)}
           >
-            <Text style={styles.optionText}>{option}</Text>
+            <Text style={styles.optionText}>{option.text}</Text>
           </TouchableOpacity>
         ))}
 
@@ -121,13 +127,39 @@ const QuizScreen: React.FC = () => {
 
         {/* Submit Button */}
         {currentQuestionIndex === formQuestions.length - 1 && lastOptionSelected && (
-          <Button
-            mode="contained"
-            style={styles.submitButton}
-            onPress={() => router.push("/Form-Result")}
-          >
-            Submit
-          </Button>
+         <Button
+         mode="contained"
+         style={styles.submitButton}
+         onPress={async () => {
+           try {
+             const response = await fetch("http://192.168.1.168:5000/chat", {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify({ responses: selectedAnswers }),
+             });
+       
+             const data = await response.json();
+             console.log("Chatbot response:", data);
+       
+             // Navigate to CareerSuggestionsScreen with chatbot suggestions
+             router.push({
+              pathname: "/Form-Result",
+              params: {
+                suggestions: JSON.stringify(data.response), // Pass the suggestions as a JSON string
+              },
+            });
+            
+            
+            
+           } catch (error) {
+             console.error("Error submitting form:", error);
+           }
+         }}
+       >
+         Submit
+       </Button>
+       
+       
         )}
       </View>
     </>

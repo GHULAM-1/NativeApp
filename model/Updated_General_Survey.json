@@ -1,0 +1,226 @@
+{
+    "id": "form1",
+    "form_name": "General Survey",
+    "questions": [
+        {
+            "question_id": "q1",
+            "text": "When faced with a problem, you prefer to:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Analyze it logically and systematically."
+                },
+                {
+                    "label": "B",
+                    "text": "Think outside the box for creative solutions."
+                },
+                {
+                    "label": "C",
+                    "text": "Discuss it with others to gather diverse perspectives."
+                },
+                {
+                    "label": "D",
+                    "text": "Trust my instincts and previous experiences."
+                }
+            ]
+        },
+        {
+            "question_id": "q2",
+            "text": "In a typical workday, I prefer:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Structured tasks with clear guidelines."
+                },
+                {
+                    "label": "B",
+                    "text": "Opportunities to innovate and create."
+                },
+                {
+                    "label": "C",
+                    "text": "Collaboration in team projects."
+                },
+                {
+                    "label": "D",
+                    "text": "Independence in my work."
+                }
+            ]
+        },
+        {
+            "question_id": "q3",
+            "text": "I am most skilled at:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Technical tasks and analysis."
+                },
+                {
+                    "label": "B",
+                    "text": "Artistic and creative endeavors."
+                },
+                {
+                    "label": "C",
+                    "text": "Interpersonal communication and teamwork."
+                },
+                {
+                    "label": "D",
+                    "text": "Problem-solving based on experience."
+                }
+            ]
+        },
+        {
+            "question_id": "q4",
+            "text": "I find satisfaction in:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Achieving measurable results."
+                },
+                {
+                    "label": "B",
+                    "text": "Expressing my creativity."
+                },
+                {
+                    "label": "C",
+                    "text": "Helping others and building relationships."
+                },
+                {
+                    "label": "D",
+                    "text": "Navigating challenges successfully."
+                }
+            ]
+        },
+        {
+            "question_id": "q5",
+            "text": "I enjoy learning about:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Scientific or technical subjects."
+                },
+                {
+                    "label": "B",
+                    "text": "Art, culture, and design."
+                },
+                {
+                    "label": "C",
+                    "text": "Psychology and human behavior."
+                },
+                {
+                    "label": "D",
+                    "text": "Practical skills and hands-on tasks."
+                }
+            ]
+        },
+        {
+            "question_id": "q6",
+            "text": "I feel comfortable using technology to:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Analyze data and statistics."
+                },
+                {
+                    "label": "B",
+                    "text": "Create art or design projects."
+                },
+                {
+                    "label": "C",
+                    "text": "Communicate and collaborate with others."
+                },
+                {
+                    "label": "D",
+                    "text": "Automate tasks and improve efficiency."
+                }
+            ]
+        },
+        {
+            "question_id": "q7",
+            "text": "In a group setting, I usually:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Take charge and lead the discussion."
+                },
+                {
+                    "label": "B",
+                    "text": "Contribute creative ideas."
+                },
+                {
+                    "label": "C",
+                    "text": "Facilitate communication among members."
+                },
+                {
+                    "label": "D",
+                    "text": "Work independently and share results later."
+                }
+            ]
+        },
+        {
+            "question_id": "q8",
+            "text": "I prefer to work on projects that:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Follow a clear plan and timeline."
+                },
+                {
+                    "label": "B",
+                    "text": "Allow for flexibility and creative expression."
+                },
+                {
+                    "label": "C",
+                    "text": "Involve teamwork and collaboration."
+                },
+                {
+                    "label": "D",
+                    "text": "Are self-directed and independent."
+                }
+            ]
+        },
+        {
+            "question_id": "q9",
+            "text": "I feel most accomplished when:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "I complete a challenging task successfully."
+                },
+                {
+                    "label": "B",
+                    "text": "I create something unique and impactful."
+                },
+                {
+                    "label": "C",
+                    "text": "I help someone achieve their goals."
+                },
+                {
+                    "label": "D",
+                    "text": "I find a novel solution to a problem."
+                }
+            ]
+        },
+        {
+            "question_id": "q10",
+            "text": "I enjoy tackling:",
+            "options": [
+                {
+                    "label": "A",
+                    "text": "Logical puzzles and problems."
+                },
+                {
+                    "label": "B",
+                    "text": "Artistic projects and crafts."
+                },
+                {
+                    "label": "C",
+                    "text": "Social issues and community challenges."
+                },
+                {
+                    "label": "D",
+                    "text": "Technical challenges that require hands-on work."
+                }
+            ]
+        }
+    ]
+}

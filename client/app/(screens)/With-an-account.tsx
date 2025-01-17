@@ -56,7 +56,7 @@ const HomeOptions = () => {
         {/* AI Chatbot Button */}
         <TouchableOpacity
           style={styles.touchableButton}
-          onPress={() => router.push("/Form")}
+          onPress={() => router.push("/ChatBot")}
         >
           <View style={styles.buttonContent}>
             <Image source={chatbot} style={styles.image} contentFit="contain" />

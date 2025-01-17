@@ -1,17 +1,30 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { careerOptions } from "@/lib/data'/form-result-data";
-import { CareerOption } from "@/lib/types/form-result-type";
-import { router } from "expo-router";
+import { useRouter, useGlobalSearchParams } from "expo-router";
+type University = {
+  university: string;
+  location: string;
+  number: string;
+  website: string;
+};
+
+type CareerOption = {
+  description: string;
+  universities: University[];
+};
+
+type Suggestions = {
+  [key: string]: CareerOption;
+};
 
 const CareerSuggestionsScreen: React.FC = () => {
+  const router = useRouter();
+  const params = useGlobalSearchParams(); 
+
+  const suggestions: Suggestions = params?.suggestions
+  ? JSON.parse(params.suggestions as string)
+  : {};
   return (
     <>
       <View>
@@ -23,30 +36,24 @@ const CareerSuggestionsScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
-        {/* Header */}
         <Text style={styles.header}>
-          Based on your responses, here are a few career options that might be
-          best for you:
+          Based on your responses, here are a few career options that might be best for you:
         </Text>
 
-        {/* Career Options List */}
         <FlatList
-          data={careerOptions}
-          keyExtractor={(item: CareerOption) => item.id}
-          renderItem={({ item }: { item: CareerOption }) => (
+          data={Object.entries(suggestions)} // Convert suggestions object to array
+          keyExtractor={([key]) => key}
+          renderItem={({ item: [key, suggestion] }) => (
             <TouchableOpacity
               onPress={() => router.push(`/University-Screen`)}
-              activeOpacity={0.8} // Navigate to a detailed screen
+              activeOpacity={0.8}
             >
               <View style={styles.card}>
                 <View style={styles.cardHeader}>
-                  <Ionicons name={item.icon} size={30} color="#000" />
-                  <Text style={styles.cardTitle}>{item.title}</Text>
+                  <Ionicons name="briefcase" size={30} color="#000" />
+                  <Text style={styles.cardTitle}>{key}</Text>
                 </View>
-                <Text style={styles.cardNote}>
-                  <Text style={styles.boldText}>Note: </Text>
-                  {item.note}
-                </Text>
+                <Text>{suggestion.description}</Text>
               </View>
             </TouchableOpacity>
           )}
@@ -99,6 +106,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    height: 110,
   },
   cardHeader: {
     flexDirection: "row",
@@ -111,14 +119,9 @@ const styles = StyleSheet.create({
     color: "#2A2A2A",
     marginLeft: 10,
   },
-  cardNote: {
-    fontSize: 14,
-    color: "#2A2A2A",
-    lineHeight: 20,
-  },
-  boldText: {
-    fontWeight: "bold",
-  },
 });
 
 export default CareerSuggestionsScreen;
+
+
+
