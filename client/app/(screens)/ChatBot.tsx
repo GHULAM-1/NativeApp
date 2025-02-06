@@ -6,9 +6,12 @@ import {
   Text,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { sendMessageToChatbot } from "@/lib/api/api";
+import { streamChatResponse } from "@/lib/api/api";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 type Message = {
   sender: string;
@@ -18,92 +21,95 @@ type Message = {
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>("");
+  const [isStreaming, setIsStreaming] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchInitialMessage = async () => {
-      try {
-        const response = await sendMessageToChatbot("Hello!");
-        const botMessage: Message = { sender: "AI", text: response };
-        setMessages([botMessage]);
-      } catch (error) {
-        console.error("Error fetching initial bot message:", error);
-      }
-    };
-
-    fetchInitialMessage();
-  }, []);
-
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!input.trim()) return;
-
+  
     const userMessage: Message = { sender: "You", text: input };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-
-    try {
-      const response = await sendMessageToChatbot(input);
-      const botMessage: Message = { sender: "AI", text: response };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    } catch (error) {
-      const errorMessage: Message = {
-        sender: "AI",
-        text: "Error connecting to the chatbot.",
-      };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    }
-
     setInput("");
-  };
-
-  return (
-    <View style={styles.container}>
-      <ScrollView style={styles.chatContainer}>
-        {messages.map((msg, index) => {
-          if (msg.sender === "AI") {
-            return (
-              <View key={index} style={styles.botMessageContainer}>
-                <LinearGradient
-                  colors={["#cdc1ff", "#e5d9f2"]}
-                  style={styles.botMessage}
-                >
-                  <Text style={styles.botText}>
-                    {msg.sender}: {msg.text}
-                  </Text>
-                </LinearGradient>
-              </View>
-            );
-          } else {
-            return (
-              <View key={index} style={styles.userMessageContainer}>
-                <LinearGradient
-                  colors={["rgba(255, 255, 255, 1)", "rgba(115, 170, 176, 1)"]}
-                  start={[0, 1]}
-                  end={[0, 0]}
-                  style={styles.userMessage}
-                >
-                  <Text style={styles.userText}>
-                    {msg.sender}: {msg.text}
-                  </Text>
-                </LinearGradient>
-              </View>
-            );
+  
+    const botMessage: Message = { sender: "AI", text: "" };
+    setMessages((prevMessages) => [...prevMessages, botMessage]);
+    setIsStreaming(true);
+  
+    const cleanup = streamChatResponse(
+      input,
+      (chunk) => {
+        if (chunk === "[DONE]") {
+          setIsStreaming(false);
+          cleanup();
+          return;
+        }
+  
+        setMessages((prevMessages) => {
+          const updatedMessages = [...prevMessages];
+          const lastMessage = updatedMessages[updatedMessages.length - 1];
+          if (lastMessage.sender === "AI") {
+            lastMessage.text = lastMessage.text.trimEnd() + " " + chunk.trimStart();
           }
-        })}
-      </ScrollView>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Type your message..."
-        />
-        <Button title="Send" onPress={handleSendMessage} />
+          return updatedMessages;
+        });
+      },
+      (error) => {
+        console.error("Streaming error:", error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "AI", text: "Error connecting to the chatbot." },
+        ]);
+        setIsStreaming(false);
+      }
+    );
+  };
+  
+  
+  return (
+    <>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+      <View style={styles.container}>
+        <ScrollView style={styles.chatContainer}>
+          {messages.map((msg, index) => (
+            <View
+              key={index}
+              style={
+                msg.sender === "AI"
+                  ? styles.botMessageContainer
+                  : styles.userMessageContainer
+              }
+            >
+              <LinearGradient
+                colors={msg.sender === "AI" ? ["#0000", "#CFCCFD"] : ["#0000", "#D9ECFC"]}
+                style={msg.sender === "AI" ? styles.botMessage : styles.userMessage}
+              >
+                <Text
+                  style={msg.sender === "AI" ? styles.botText : styles.userText}
+                >
+                  {msg.sender}: {msg.text}
+                </Text>
+              </LinearGradient>
+            </View>
+          ))}
+        </ScrollView>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type your message..."
+            editable={!isStreaming}
+          />
+          <Button title="Send" onPress={handleSendMessage} disabled={isStreaming} />
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
+  container: { flex: 1, padding: 10, marginTop: 90 },
   chatContainer: { flex: 1, marginBottom: 10 },
   inputContainer: { flexDirection: "row", alignItems: "center" },
   input: {
@@ -113,6 +119,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginRight: 10,
+  },
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 10,
+    backgroundColor: "black",
+    borderRadius: 25,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   userMessageContainer: {
     alignSelf: "flex-end",

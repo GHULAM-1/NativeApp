@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { useUserStore } from "@/store/useUserStore";
 import Header from "@/components/Header";
 
@@ -30,54 +31,43 @@ const HomeOptions = () => {
         </TouchableOpacity>
 
         {/* Form Button */}
-        <TouchableOpacity
-          style={styles.touchableButton}
-          onPress={() => router.push("/Form")}
-        >
-          <View style={styles.buttonContent}>
-            <Image source={form} style={styles.image} contentFit="contain" />
-
-            <Text style={styles.text}>Form</Text>
-          </View>
+        <TouchableOpacity onPress={() => router.push("/Form")} style={styles.buttonContainer}>
+          <LinearGradient colors={["#FFFFFF", "#CFCCFD"]} style={styles.gradientButton}>
+            <View style={styles.buttonContent}>
+              <Image source={form} style={styles.image} contentFit="contain" />
+              <Text style={styles.text}>Form</Text>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* Quest Connect Button */}
-        <TouchableOpacity
-          style={styles.touchableButton}
-          onPress={() => router.push("/Quest-Connect")}
-        >
-          <View style={styles.buttonContent}>
-            <Image source={connect} style={styles.image} contentFit="contain" />
-
-            <Text style={styles.text}>Quest Connect</Text>
-          </View>
+        <TouchableOpacity onPress={() => router.push("/Quest-Connect")} style={styles.buttonContainer}>
+          <LinearGradient colors={["#FFFFFF", "#CFCCFD"]} style={styles.gradientButton}>
+            <View style={styles.buttonContent}>
+              <Image source={connect} style={styles.image} contentFit="contain" />
+              <Text style={styles.text}>Quest Connect</Text>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* AI Chatbot Button */}
-        <TouchableOpacity
-          style={styles.touchableButton}
-          onPress={() => router.push("/ChatBot")}
-        >
-          <View style={styles.buttonContent}>
-            <Image source={chatbot} style={styles.image} contentFit="contain" />
-
-            <Text style={styles.text}>AI Chatbot</Text>
-          </View>
+        <TouchableOpacity onPress={() => router.push("/ChatBot")} style={styles.buttonContainer}>
+          <LinearGradient colors={["#FFFFFF", "#CFCCFD"]} style={styles.gradientButton}>
+            <View style={styles.buttonContent}>
+              <Image source={chatbot} style={styles.image} contentFit="contain" />
+              <Text style={styles.text}>AI Chatbot</Text>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
 
         {/* A/O Level Guide Button */}
-        <TouchableOpacity
-          style={styles.touchableButton}
-          onPress={() => router.push("/Equivalence-Info-Screen")}
-        >
-          <View style={styles.buttonContent}>
-            <Image
-              source={aolevel}
-              style={styles.image2}
-              contentFit="contain"
-            />
-            <Text style={styles.text}>A / O Level Student Guide</Text>
-          </View>
+        <TouchableOpacity onPress={() => router.push("/Equivalence-Info-Screen")} style={styles.buttonContainer}>
+          <LinearGradient colors={["#FFFFFF", "#CFCCFD"]} style={styles.gradientButton}>
+            <View style={styles.buttonContent}>
+              <Image source={aolevel} style={styles.image2} contentFit="contain" />
+              <Text style={styles.text}>A / O Level Student Guide</Text>
+            </View>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </>
@@ -93,8 +83,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    marginTop:26,
-    padding:0,
+    marginTop: 26,
+    padding: 0,
   },
   image: {
     width: 70,
@@ -116,37 +106,37 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
-  touchableButton: {
+  buttonContainer: {
     width: "70%",
     marginVertical: 10,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#E6E6FA",
+    borderWidth: 1,
+
+  },
+  gradientButton: {
     paddingVertical: 15,
     alignItems: "center",
+    borderRadius: 20,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    width: "100%",
   },
   buttonContent: {
     flexDirection: "row",
     alignItems: "center",
-    // justifyContent: "space-between",
     width: "90%",
-  },
-  icon: {
-    width: "30%", // Icon takes 30% of the width
-    textAlign: "center", // Center align the icon
   },
   text: {
     fontSize: 16,
     fontWeight: "600",
     color: "#000",
     textAlign: "center",
-    width: "60%", // Text takes 70% of the width
-    flexWrap: "wrap", // Ensures text wraps if it exceeds the width
+    width: "60%",
+    flexWrap: "wrap",
   },
 });
 

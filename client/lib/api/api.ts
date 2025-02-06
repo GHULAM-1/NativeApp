@@ -1,6 +1,10 @@
 import { EXPO_IP_ADDRESS } from "@env";
 
-const IP_KEY = EXPO_IP_ADDRESS;
+const IP_KEY = "192.168.1.168";
+import * as Location from 'expo-location';
+import  EventSource  from "react-native-sse";
+
+
 
 export const createUserInFirestore = async (userData: any) => {
   console.log("Sending data to API:", userData);
@@ -232,10 +236,45 @@ export const uploadImageToCloudinary = async (imageUri: string): Promise<string>
     throw error;
   }
 };
+export const streamChatResponse = (
+  message: string,
+  onChunkReceived: (chunk: string) => void,
+  onError: (error: any) => void
+) => {
+  const eventSource = new EventSource(`http://${IP_KEY}:5000/chat`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({ message }),
+  });
+
+  eventSource.addEventListener("message", (event) => {
+    const chunk = event.data;
+    if (chunk !== null) {
+      // Only call onChunkReceived if chunk is not null
+      onChunkReceived(chunk);
+    }
+  });
+
+  eventSource.addEventListener("error", (event) => {
+    console.error("Error in streaming response:", event);
+    onError(event);
+    eventSource.close();
+  });
+
+  eventSource.addEventListener("open", () => {
+    console.log("Connection opened.");
+  });
+
+  return () => {
+    eventSource.close();
+  };
+};
 
 export const sendMessageToChatbot = async (message: string) => {
   try {
-    const response = await fetch("http://192.168.1.168:5000/chat", {
+    const response = await fetch(`http://${IP_KEY}:5000/chat`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -254,3 +293,66 @@ export const sendMessageToChatbot = async (message: string) => {
     throw error; 
   }
 };
+
+export const getCurrentLocation = async () => {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access location was denied');
+      return null;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    return {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+  } catch (error) {
+    console.error('Error getting current location:', error);
+    return null;
+  }
+};
+
+
+export const fetchNearbyUniversities = async (
+  latitude: number,
+  longitude: number
+): Promise<any[]> => {
+  try {
+    const response = await fetch(
+      `http://${IP_KEY}:3000/api/universities?latitude=${latitude}&longitude=${longitude}`
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch nearby universities');
+    }
+    const data = await response.json();
+    return data; 
+  } catch (error) {
+    console.error('Error fetching nearby universities:', error);
+    throw error;
+  }
+};
+type NearbyUniversitiesResponse = {
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  universities: any[]; 
+};
+
+export const getNearbyUniversities = async (): Promise<NearbyUniversitiesResponse> => {
+  try {
+    const location = await getCurrentLocation();
+    if (!location) {
+      throw new Error('Unable to get user location');
+    }
+
+    const universities = await fetchNearbyUniversities(location.latitude, location.longitude);
+    return { location, universities };
+  } catch (error) {
+    console.error('Error fetching nearby universities:', error);
+    throw error;
+  }
+};
+
+

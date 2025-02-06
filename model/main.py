@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from flask_cors import CORS
 import json
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}}) 
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 template = """
 Answer the question below.
@@ -28,9 +28,11 @@ context = {
     "career_suggestions": None,
 }
 
+
 @app.route("/", methods=["GET"])
 def home():
     return "Welcome to the Flask Chatbot API!"
+
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -103,14 +105,33 @@ def chat():
                         context["conversation_history"] += f"\nYou: {user_input}\nAI: {response}"
                         return jsonify({"response": response})
 
-            result = chain.invoke({"context": context["conversation_history"], "question": user_input})
-            context["conversation_history"] += f"\nYou: {user_input}\nAI: {result}"
-            return jsonify({"response": result})
+            return Response(stream_response(user_input), content_type="text/event-stream")
         except Exception as e:
             print("Error:", str(e)) 
             return jsonify({"error": str(e)}), 500
 
     return jsonify({"error": "Invalid request format"}), 400
+
+
+def stream_response(user_input):
+ 
+    try:
+        is_first_chunk = True
+        include_intro = "I am an AI assistant here to help you."
+        for chunk in chain.stream({"context": context["conversation_history"], "question": user_input}):
+            if chunk.strip():
+                if is_first_chunk and not context["conversation_history"]: 
+                    chunk = f"{include_intro} {chunk.strip()}"
+                    is_first_chunk = False
+                context["conversation_history"] += f" {chunk}" 
+                yield f"data: {chunk}\n\n"
+
+        # Signal the end of the stream
+        yield "data: [DONE]\n\n"
+    except Exception as e:
+        print("Error in streaming:", str(e))
+        yield f"data: Error: {str(e)}\n\n"
+
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { Button } from "react-native-paper";
 import { Image } from "expo-image";
 import { fetchAllQuestions } from "@/lib/api/api";
+import { LinearGradient } from "expo-linear-gradient";
 
 const QuizScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -17,13 +18,15 @@ const QuizScreen: React.FC = () => {
     }[]
   >([]);
   const [lastOptionSelected, setLastOptionSelected] = useState(false);
-  const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: string }>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<{
+    [key: string]: string;
+  }>({});
 
   useEffect(() => {
     const loadQuestions = async () => {
       try {
         const fetchedQuestions = await fetchAllQuestions();
-        console.log("Fetched questions:", fetchedQuestions)
+        console.log("Fetched questions:", fetchedQuestions);
         setFormQuestions(fetchedQuestions); // Store questions in state
       } catch (error) {
         console.error("Error loading questions:", error);
@@ -56,12 +59,11 @@ const QuizScreen: React.FC = () => {
       [currentQuestion.question_id]: selectedOption.label, // Map question_id to the selected label
     }));
     setLastOptionSelected(true);
-  
+
     if (currentQuestionIndex < formQuestions.length - 1) {
       handleNext(); // Move to the next question
     }
   };
-  
 
   const next = require("../../assets/careerquest logos and icons/icons/next.png");
   const back = require("../../assets/careerquest logos and icons/icons/previous.png");
@@ -100,7 +102,12 @@ const QuizScreen: React.FC = () => {
             style={styles.optionButton}
             onPress={() => handleOptionSelect(index)}
           >
-            <Text style={styles.optionText}>{option.text}</Text>
+            <LinearGradient
+              colors={["#FFFFFF", "#CFCCFD"]}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.optionText}>{option.text}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         ))}
 
@@ -126,47 +133,55 @@ const QuizScreen: React.FC = () => {
         </View>
 
         {/* Submit Button */}
-        {currentQuestionIndex === formQuestions.length - 1 && lastOptionSelected && (
-         <Button
-         mode="contained"
-         style={styles.submitButton}
-         onPress={async () => {
-           try {
-             const response = await fetch("http://192.168.1.168:5000/chat", {
-               method: "POST",
-               headers: { "Content-Type": "application/json" },
-               body: JSON.stringify({ responses: selectedAnswers }),
-             });
-       
-             const data = await response.json();
-             console.log("Chatbot response:", data);
-       
-             // Navigate to CareerSuggestionsScreen with chatbot suggestions
-             router.push({
-              pathname: "/Form-Result",
-              params: {
-                suggestions: JSON.stringify(data.response), // Pass the suggestions as a JSON string
-              },
-            });
-            
-            
-            
-           } catch (error) {
-             console.error("Error submitting form:", error);
-           }
-         }}
-       >
-         Submit
-       </Button>
-       
-       
-        )}
+        {currentQuestionIndex === formQuestions.length - 1 &&
+          lastOptionSelected && (
+            <Button
+              mode="contained"
+              style={styles.submitButton}
+              onPress={async () => {
+                try {
+                  const response = await fetch(
+                    "http://192.168.1.168:5000/chat",
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ responses: selectedAnswers }),
+                    }
+                  );
+
+                  const data = await response.json();
+                  console.log("Chatbot response:", data);
+
+                  // Navigate to CareerSuggestionsScreen with chatbot suggestions
+                  router.push({
+                    pathname: "/Form-Result",
+                    params: {
+                      suggestions: JSON.stringify(data.response), // Pass the suggestions as a JSON string
+                    },
+                  });
+                } catch (error) {
+                  console.error("Error submitting form:", error);
+                }
+              }}
+            >
+              Submit
+            </Button>
+          )}
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: "flex-start",
+    borderRadius: 15,
+    borderColor:"#000",
+    borderWidth:1.2,
+    width: "100%",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -199,27 +214,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   optionButton: {
-    backgroundColor: "#E6E6FA",
-    borderRadius: 10,
-    paddingVertical: 15,
-    paddingHorizontal: 30,
     marginVertical: 10,
-    elevation: 2,
     width: "80%",
     alignItems: "flex-start",
   },
   optionText: {
     fontSize: 16,
     color: "#000",
-    textAlign:"left",
+    textAlign: "left",
     fontWeight: "600",
   },
   paginationContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginTop: 30,
-    width: "80%",
+    width: "90%",
   },
   pagination: {
     fontSize: 14,

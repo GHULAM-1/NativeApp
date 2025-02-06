@@ -23,8 +23,10 @@ const CareerSuggestionsScreen: React.FC = () => {
   const params = useGlobalSearchParams(); 
 
   const suggestions: Suggestions = params?.suggestions
+  
   ? JSON.parse(params.suggestions as string)
   : {};
+  console.log(suggestions)
   return (
     <>
       <View>
@@ -41,7 +43,7 @@ const CareerSuggestionsScreen: React.FC = () => {
         </Text>
 
         <FlatList
-          data={Object.entries(suggestions)} // Convert suggestions object to array
+          data={Object.entries(suggestions)} 
           keyExtractor={([key]) => key}
           renderItem={({ item: [key, suggestion] }) => (
             <TouchableOpacity

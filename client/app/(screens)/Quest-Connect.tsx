@@ -128,6 +128,7 @@ const QuestConnectScreen: React.FC = () => {
     setIsDialogVisible(false);
     try {
       await addPost(newPostData);
+      loadPosts();
     } catch (error) {
       alert("Failed to add post. Please try again.");
     }
@@ -152,7 +153,6 @@ const QuestConnectScreen: React.FC = () => {
       try {
         const fetchedPosts = await fetchPosts();
         setPosts(fetchedPosts.reverse());
-
       } catch (error) {
         console.error("Error loading posts:", error);
       }
@@ -161,7 +161,7 @@ const QuestConnectScreen: React.FC = () => {
   useEffect(() => {
     loadPosts();
 
-  }, [posts]);
+  }, []);
 
   const handleEditPost = async () => {
     if (!editPostId || !email) {
